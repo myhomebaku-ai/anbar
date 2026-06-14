@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a2c3e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Anbar">
+  <link rel="manifest" href="manifest.json">
+  <title>Anbar İdarəetmə</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --primary: #1a2c3e;
+      --accent: #2c5282;
+      --accent-light: #ebf4ff;
+      --accent-mid: #bee3f8;
+      --text: #1a202c;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --green: #276749;
+      --green-bg: #f0fff4;
+      --red: #c53030;
+      --red-bg: #fff5f5;
+      --blue-badge: #2b6cb0;
+      --blue-badge-text: #ebf8ff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.18);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --tab-h: 54px;
+      --header-h: 64px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      flex-shrink: 0;
+      height: var(--header-h);
+      background: linear-gradient(135deg, var(--primary) 0%, #243b55 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      position: relative;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    #header-title {
+      flex: 1;
+      min-width: 0;
+    }
+    #header-title h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #status-line {
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #status-line.err { color: #fc8181; }
+    #scan-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #scan-btn:active { background: rgba(255,255,255,0.22); }
+
+    /* ── SEARCH BAR ── */
+    #search-bar {
+      flex-shrink: 0;
+      background: var(--primary);
+      padding: 8px 12px 10px;
+      display: flex;
+      gap: 8px;
+      position: relative;
+      z-index: 99;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-input-wrap .search-icon {
+      position: absolute;
+      left: 10px;
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 38px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.13);
+      color: #fff;
+      font-size: 14px;
+      font-family: var(--font);
+      padding: 0 10px 0 32px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .search-input::placeholder { color: rgba(255,255,255,0.45); }
+    .search-input:focus { background: rgba(255,255,255,0.2); }
+
+    /* ── TABS ── */
+    #tabs {
+      flex-shrink: 0;
+      height: var(--tab-h);
+      background: var(--surface);
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 98;
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      font-size: 12px;
+      font-family: var(--font);
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 4px 0;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .tab-btn .tab-icon { font-size: 18px; }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 2.5px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+    #tab-count {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 8px;
+      margin-left: 3px;
+      vertical-align: middle;
+      line-height: 14px;
+      min-width: 18px;
+      text-align: center;
+    }
+    #tab-count:empty { display: none; }
+
+    /* ── TAB CONTENT ── */
+    #tab-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .tab-panel {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    .tab-panel.active { display: block; }
+
+    /* ── PRODUCTS TAB ── */
+    #products-panel {
+      padding: 10px 10px calc(var(--safe-bottom) + 10px);
+    }
+    #empty-state {
+      padding: 60px 24px;
+      text-align: center;
+      display: none;
+    }
+    #empty-state .es-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+    #empty-state h3 { font-size: 17px; color: var(--text-secondary); font-weight: 600; margin-bottom: 8px; }
+    #empty-state p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    #product-list { display: grid; gap: 8px; }
+    .product-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, box-shadow 0.12s;
+      will-change: transform;
+    }
+    .product-card:active { transform: scale(0.985); box-shadow: var(--shadow-md); }
+    .card-img-wrap {
+      flex-shrink: 0;
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      background: #f7fafc;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .card-img-placeholder {
+      font-size: 28px;
+      opacity: 0.25;
+    }
+    .card-info { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 3px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-right {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .price-tag {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green);
+      white-space: nowrap;
+    }
+    .stock-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--blue-badge);
+      color: var(--blue-badge-text);
+      white-space: nowrap;
+    }
+    .stock-badge.zero { background: var(--red); color: #fff; }
+    #sentinel { height: 32px; width: 100%; }
+    #loading-more {
+      display: none;
+      text-align: center;
+      padding: 14px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ── FILTERS TAB ── */
+    #filters-panel {
+      padding: 14px 14px calc(var(--safe-bottom) + 14px);
+    }
+    .filter-section {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .seg-control {
+      display: flex;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
+    }
+    .seg-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--font);
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 8px 4px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .filter-row:last-child { margin-bottom: 0; }
+    .filter-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .filter-input, .filter-select {
+      width: 100%;
+      height: 42px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--font);
+      padding: 0 12px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+    }
+    .filter-input:focus, .filter-select:focus { border-color: var(--accent); background: #fff; }
+    .filter-col { flex: 1; }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .toggle-label { font-size: 14px; color: var(--text); font-weight: 500; }
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 28px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 22px; height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--accent); }
+    .toggle-switch input:checked + .toggle-track::after { transform: translateX(20px); }
+    #reset-filters-btn {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s;
+      margin-bottom: 12px;
+    }
+    #reset-filters-btn:active { opacity: 0.8; }
+
+    /* ── IMPORT BUTTONS ── */
+    .import-section {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .import-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .import-btn {
+      width: 100%;
+      height: 50px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      margin-bottom: 8px;
+    }
+    .import-btn:last-child { margin-bottom: 0; }
+    .import-btn:active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+    .import-btn .ib-icon { font-size: 20px; }
+
+    /* ── ABOUT TAB ── */
+    #about-panel {
+      padding: 14px 14px calc(var(--safe-bottom) + 14px);
+    }
+    .about-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .about-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .about-card p, .about-card li {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .about-card ul { padding-left: 18px; }
+    .about-card li { margin-bottom: 4px; }
+    .col-map { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
+    .col-map th { background: var(--bg); padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+    .col-map td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .col-map tr:last-child td { border-bottom: none; }
+    .col-tag { display: inline-block; background: var(--accent-light); color: var(--accent); font-weight: 700; padding: 1px 7px; border-radius: 6px; font-size: 12px; }
+
+    /* ── DETAIL MODAL (bottom sheet) ── */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      z-index: 200;
+      display: none;
+      transition: background 0.3s;
+    }
+    #modal-overlay.open {
+      background: rgba(0,0,0,0.5);
+      display: block;
+    }
+    #detail-modal {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      max-height: 88vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      z-index: 201;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      padding-bottom: calc(var(--safe-bottom) + 20px);
+      box-shadow: var(--shadow-lg);
+    }
+    #detail-modal.open { transform: translateY(0); }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto 6px;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; padding-right: 12px; line-height: 1.3; }
+    #modal-close-btn {
+      width: 36px; height: 36px;
+      border: none;
+      background: var(--bg);
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .modal-body { padding: 16px 18px; }
+    .modal-img-wrap {
+      width: 100%;
+      height: 200px;
+      border-radius: var(--radius-lg);
+      background: #f7fafc;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+    .modal-img { width: 100%; height: 100%; object-fit: contain; }
+    .modal-no-img { font-size: 48px; opacity: 0.2; }
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 100px;
+      padding-top: 1px;
+    }
+    .detail-val { font-size: 14px; color: var(--text); flex: 1; font-weight: 500; }
+    .warehouse-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .wh-cell {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      text-align: center;
+      border: 2px solid transparent;
+    }
+    .wh-cell.active { border-color: var(--accent); background: var(--accent-light); }
+    .wh-cell-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .wh-cell-val { font-size: 16px; font-weight: 700; color: var(--text); }
+    .price-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .price-cell {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      text-align: center;
+      border: 2px solid transparent;
+    }
+    .price-cell.active { border-color: var(--green); background: var(--green-bg); }
+    .price-cell-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .price-cell-val { font-size: 14px; font-weight: 700; color: var(--green); }
+    #modal-close-bottom {
+      margin: 18px 18px 0;
+      width: calc(100% - 36px);
+      height: 52px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      font-family: var(--font);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #modal-close-bottom:active { opacity: 0.85; }
+
+    /* ── FULLSCREEN IMAGE ── */
+    #fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #fullscreen-overlay.open { display: flex; }
+    #fullscreen-img { max-width: 100%; max-height: 100vh; object-fit: contain; }
+    #fullscreen-close {
+      position: fixed;
+      top: max(16px, env(safe-area-inset-top));
+      right: 16px;
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── PROGRESS OVERLAY ── */
+    #progress-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #progress-overlay.open { display: flex; }
+    #progress-box {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: var(--shadow-lg);
+    }
+    #progress-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    #progress-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      min-height: 18px;
+    }
+    #progress-bar-wrap {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    #progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, #4a9eff 100%);
+      border-radius: 4px;
+      transition: width 0.2s ease;
+      width: 0%;
+    }
+    #progress-pct {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #progress-detail { font-size: 12px; color: var(--text-muted); min-height: 16px; }
+
+    /* ── CAMERA OVERLAY ── */
+    #camera-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 350;
+      display: none;
+      flex-direction: column;
+    }
+    #camera-overlay.open { display: flex; }
+    #camera-video {
+      flex: 1;
+      width: 100%;
+      object-fit: cover;
+    }
+    #camera-guide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .scan-frame {
+      width: 240px; height: 150px;
+      border: 3px solid rgba(255,255,255,0.8);
+      border-radius: 12px;
+      box-shadow: 0 0 0 4000px rgba(0,0,0,0.45);
+    }
+    .scan-line {
+      position: absolute;
+      top: 50%;
+      left: calc(50% - 116px);
+      width: 232px;
+      height: 2px;
+      background: #4a9eff;
+      border-radius: 1px;
+      animation: scanline 2s linear infinite;
+    }
+    @keyframes scanline {
+      0% { transform: translateY(-60px); opacity: 1; }
+      50% { opacity: 1; }
+      100% { transform: translateY(60px); opacity: 0.3; }
+    }
+    #camera-close-btn {
+      position: fixed;
+      bottom: max(32px, calc(var(--safe-bottom) + 24px));
+      left: 50%;
+      transform: translateX(-50%);
+      height: 52px;
+      padding: 0 32px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+      color: #fff;
+      font-size: 16px;
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #camera-label {
+      position: fixed;
+      top: max(20px, env(safe-area-inset-top));
+      left: 0; right: 0;
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0 24px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 500;
+      z-index: 500;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: var(--shadow-md);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Hidden file inputs */
+    #excel-input, #images-input { display: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-title">
+      <h1>📦 Anbar İdarəetmə</h1>
+      <div id="status-line">Məlumat yüklənmir...</div>
+    </div>
+    <button id="scan-btn" title="Barkod skan et">📷</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="search-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-name" type="search" placeholder="Məhsul adı axtar..." autocomplete="off">
+    </div>
+    <div class="search-input-wrap">
+      <span class="search-icon">🔖</span>
+      <input class="search-input" id="search-code" type="search" placeholder="Barkod / Artikul..." autocomplete="off">
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" data-tab="products">
+      <span class="tab-icon">🔍</span>
+      <span>Məhsullar <span id="tab-count"></span></span>
+    </button>
+    <button class="tab-btn" data-tab="filters">
+      <span class="tab-icon">⚙️</span>
+      <span>Filterlər</span>
+    </button>
+    <button class="tab-btn" onclick="event.stopPropagation(); window.location.href='sifarisler.html';">
+      <span class="tab-icon">🧾</span>
+      <span>Sifarişlər</span>
+    </button>
+    <button class="tab-btn" data-tab="about">
+      <span class="tab-icon">ℹ️</span>
+      <span>Haqqında</span>
+    </button>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div id="tab-content">
+
+    <!-- PRODUCTS -->
+    <div class="tab-panel active" id="products-panel">
+      <div id="empty-state">
+        <div class="es-icon">📦</div>
+        <h3>Məhsul tapılmadı</h3>
+        <p>Excel faylı idxal edin və ya axtarış/filteri dəyişin.</p>
+      </div>
+      <div id="product-list"></div>
+      <div id="loading-more">Daha çox yüklənir…</div>
+      <div id="sentinel"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="tab-panel" id="filters-panel">
+
+      <!-- Import -->
+      <div class="import-section">
+        <div class="import-section-title">📥 Məlumat idxalı</div>
+        <button class="import-btn" id="excel-btn">
+          <span class="ib-icon">📊</span>
+          <span>Excel faylı idxal et (.xlsx / .xls)</span>
+        </button>
+        <button class="import-btn" id="images-btn">
+          <span class="ib-icon">🖼️</span>
+          <span>Şəkil qovluğu idxal et</span>
+        </button>
+      </div>
+
+      <!-- Warehouse -->
+      <div class="filter-section">
+        <div class="filter-section-title">🏭 Anbar</div>
+        <div class="seg-control" id="wh-seg">
+          <button class="seg-btn active" data-wh="qarayev">Qarayev</button>
+          <button class="seg-btn" data-wh="razin">Razin</button>
+          <button class="seg-btn" data-wh="esas">Əsas</button>
+        </div>
+      </div>
+
+      <!-- Price type -->
+      <div class="filter-section">
+        <div class="filter-section-title">💰 Qiymət növü</div>
+        <div class="seg-control" id="price-seg">
+          <button class="seg-btn active" data-price="perakendeQiymeti">Pərakəndə</button>
+          <button class="seg-btn" data-price="topdanQiymeti">Topdan</button>
+          <button class="seg-btn" data-price="alishQiymeti">Alış</button>
+        </div>
+      </div>
+
+      <!-- Location & Supplier -->
+      <div class="filter-section">
+        <div class="filter-section-title">📍 Yer & Tədarükçü</div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Saxlama yeri</label>
+            <div class="seg-control" id="loc-seg">
+              <button class="seg-btn active" data-loc="">Hamısı</button>
+              <button class="seg-btn" data-loc="asagi">Aşağı</button>
+              <button class="seg-btn" data-loc="yuxari">Yuxarı</button>
+            </div>
+          </div>
+        </div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Tədarükçü</label>
+            <input class="filter-input" id="filter-supplier" type="text" placeholder="Adla axtar...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock range -->
+      <div class="filter-section">
+        <div class="filter-section-title">📈 Stok aralığı</div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Min</label>
+            <input class="filter-input" id="filter-stock-min" type="number" placeholder="0" min="0">
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Max</label>
+            <input class="filter-input" id="filter-stock-max" type="number" placeholder="∞" min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW: Price range filter -->
+      <div class="filter-section">
+        <div class="filter-section-title">💰 Qiymət aralığı (₼)</div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Min</label>
+            <input class="filter-input" id="filter-price-min" type="number" step="0.01" placeholder="0" min="0">
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Max</label>
+            <input class="filter-input" id="filter-price-max" type="number" step="0.01" placeholder="∞" min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Image + Sort -->
+      <div class="filter-section">
+        <div class="filter-section-title">🔀 Sıralama & Seçim</div>
+        <div class="toggle-row" style="margin-bottom:14px">
+          <span class="toggle-label">Yalnız şəkilli məhsullar</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="filter-only-img">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Sırala</label>
+            <select class="filter-select" id="filter-sort">
+              <option value="name">Ad</option>
+              <option value="price">Qiymət</option>
+              <option value="stock">Stok</option>
+            </select>
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">İstiqamət</label>
+            <select class="filter-select" id="filter-dir">
+              <option value="asc">A → Z ↑</option>
+              <option value="desc">Z → A ↓</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button id="reset-filters-btn">🔄 Filterləri sıfırla</button>
+
+    </div>
+
+    <!-- ABOUT -->
+    <div class="tab-panel" id="about-panel">
+      <div class="about-card">
+        <h2>📦 Anbar İdarəetmə PWA</h2>
+        <p>Bu tətbiq tam offline işləyir. İlk yükləmədən sonra internet bağlantısı olmadan da istifadə edilə bilər. Bütün məlumatlar cihazınızın IndexedDB bazasında saxlanır.</p>
+      </div>
+      <div class="about-card">
+        <h2>📊 Excel sütun xəritəsi</h2>
+        <table class="col-map">
+          <thead>
+            <tr><th>Sütun</th><th>Sahə</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="col-tag">B</span></td><td>Məhsul adı</td></tr>
+            <tr><td><span class="col-tag">E</span></td><td>Barkod</td></tr>
+            <tr><td><span class="col-tag">F</span></td><td>Artikul (unikal açar, şəkil adı)</td></tr>
+            <tr><td><span class="col-tag">G</span></td><td>Tədarükçü</td></tr>
+            <tr><td><span class="col-tag">I</span></td><td>Saxlama yeri</td></tr>
+            <tr><td><span class="col-tag">K</span></td><td>Qarayev anbar miqdarı</td></tr>
+            <tr><td><span class="col-tag">L</span></td><td>Razin anbar miqdarı</td></tr>
+            <tr><td><span class="col-tag">M</span></td><td>Əsas anbar miqdarı</td></tr>
+            <tr><td><span class="col-tag">O</span></td><td>Alış qiyməti</td></tr>
+            <tr><td><span class="col-tag">P</span></td><td>Topdan qiyməti</td></tr>
+            <tr><td><span class="col-tag">Q</span></td><td>Pərakəndə qiyməti</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="about-card">
+        <h2>🖼️ Şəkil qovluğu</h2>
+        <p>Şəkil fayllarının adı (uzantısız) məhsulun <strong>Artikul</strong> kodu ilə eyni olmalıdır. Məs: <code>ABC123.jpg</code> → artikul <code>ABC123</code> olan məhsula uyğunlaşır.</p>
+      </div>
+      <div class="about-card">
+        <h2>📷 Barkod skaneri</h2>
+        <p>Android Chrome-da daxili <strong>BarcodeDetector API</strong> istifadə olunur. Kamera icazəsi tələb olunur. Skan etdikdən sonra barkod axtarış sahəsinə avtomatik daxil edilir.</p>
+      </div>
+      <div class="about-card">
+        <h2>💡 Məsləhətlər</h2>
+        <ul>
+          <li>Anbar seçimini dəyişərək hər anbar üçün stoku görə bilərsiniz.</li>
+          <li>Filterlər tabından qiymət növü, yer, stok aralığı təyin edə bilərsiniz.</li>
+          <li>Şəkilli məhsullar kartın sol tərəfindəki kiçik şəkillə görünür.</li>
+          <li>Məhsul kartına toxunaraq tam məlumat görə bilərsiniz.</li>
+          <li>Tam ekran şəkil üçün modalda şəklə toxunun.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="modal-overlay"></div>
+<div id="detail-modal" role="dialog" aria-modal="true" aria-label="Məhsul detalları">
+  <div class="modal-handle"></div>
+  <div class="modal-header">
+    <div class="modal-title" id="modal-title">Məhsul adı</div>
+    <button id="modal-close-btn" aria-label="Bağla">✕</button>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+  <button id="modal-close-bottom">BAĞLA</button>
+</div>
+
+<!-- FULLSCREEN IMAGE -->
+<div id="fullscreen-overlay" role="dialog" aria-modal="true" aria-label="Böyük şəkil">
+  <img id="fullscreen-img" src="" alt="">
+  <button id="fullscreen-close" aria-label="Bağla">✕</button>
+</div>
+
+<!-- PROGRESS OVERLAY -->
+<div id="progress-overlay" role="status" aria-live="polite">
+  <div id="progress-box">
+    <div id="progress-title">Yüklənir...</div>
+    <div id="progress-subtitle"></div>
+    <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+    <div id="progress-pct">0%</div>
+    <div id="progress-detail"></div>
+  </div>
+</div>
+
+<!-- CAMERA OVERLAY -->
+<div id="camera-overlay" role="dialog" aria-modal="true" aria-label="Barkod skaneri">
+  <div id="camera-label">Barkodu çərçivəyə yerləşdirin</div>
+  <video id="camera-video" autoplay muted playsinline></video>
+  <div id="camera-guide">
+    <div class="scan-frame"></div>
+    <div class="scan-line"></div>
+  </div>
+  <button id="camera-close-btn">❌ Bağla</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- Hidden inputs -->
+<input type="file" id="excel-input" accept=".xlsx,.xls">
+<input type="file" id="images-input" multiple webkitdirectory accept="image/*">
+
+<!-- XLSX library -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"
+        onerror="window._xlsxLoadFailed=true"></script>
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────
+// SERVICE WORKER REGISTRATION
+// ─────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// ─────────────────────────────────────────────
+// INDEXEDDB
+// ─────────────────────────────────────────────
+const DB_NAME = 'AnbarDB';
+const DB_VERSION = 1;
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('products')) {
+        d.createObjectStore('products', { keyPath: 'artikul' });
+      }
+      if (!d.objectStoreNames.contains('images')) {
+        d.createObjectStore('images', { keyPath: 'artikul' });
+      }
+    };
+    req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPutAll(storeName, items) {
+  return new Promise((resolve, reject) => {
+    if (!db) { resolve(); return; }
+    try {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      let i = 0;
+      function next() {
+        if (i >= items.length) return;
+        store.put(items[i++]).onsuccess = next;
+      }
+      next();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    } catch(e) { reject(e); }
+  });
+}
+
+function dbGetAll(storeName) {
+  return new Promise((resolve, reject) => {
+    if (!db) { resolve([]); return; }
+    try {
+      const tx = db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    } catch(e) { reject(e); }
+  });
+}
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let allProducts = [];
+let filteredProducts = [];
+let imageMap = {}; // artikul (lowercase) → objectURL
+let displayLimit = 50;
+const PAGE_SIZE = 50;
+
+let filters = {
+  warehouse: 'qarayev',
+  priceType: 'perakendeQiymeti',
+  locationMode: '',
+  supplier: '',
+  stockMin: 0,
+  stockMax: Infinity,
+  priceMin: 0,
+  priceMax: Infinity,
+  onlyWithImage: false,
+  sortBy: 'name',
+  sortDir: 'asc',
+};
+let searchName = '';
+let searchCode = '';
+
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+function numFmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '— ₼';
+  if (typeof n !== 'number') n = parseFloat(n);
+  if (isNaN(n)) return '— ₼';
+  return n.toFixed(2) + ' ₼';
+}
+
+function showToast(msg, dur = 2200) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+let toastTimer;
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+// ─────────────────────────────────────────────
+// PROGRESS OVERLAY
+// ─────────────────────────────────────────────
+const progressOverlay = document.getElementById('progress-overlay');
+const progressBar = document.getElementById('progress-bar');
+const progressPct = document.getElementById('progress-pct');
+const progressTitle = document.getElementById('progress-title');
+const progressSubtitle = document.getElementById('progress-subtitle');
+const progressDetail = document.getElementById('progress-detail');
+
+function showProgress(title, subtitle = '') {
+  progressTitle.textContent = title;
+  progressSubtitle.textContent = subtitle;
+  progressDetail.textContent = '';
+  setProgress(0, '');
+  progressOverlay.classList.add('open');
+}
+function setProgress(pct, detail = '') {
+  const p = Math.round(pct);
+  progressBar.style.width = p + '%';
+  progressPct.textContent = p + '%';
+  if (detail) progressDetail.textContent = detail;
+}
+function hideProgress() {
+  progressOverlay.classList.remove('open');
+}
+
+// ─────────────────────────────────────────────
+// STATUS LINE
+// ─────────────────────────────────────────────
+function updateStatus() {
+  const el = document.getElementById('status-line');
+  const imgCount = Object.keys(imageMap).length;
+  el.textContent = `${allProducts.length} məhsul · ${imgCount} şəkil`;
+  el.classList.remove('err');
+}
+function setStatusError(msg) {
+  const el = document.getElementById('status-line');
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('err');
+}
+
+// ─────────────────────────────────────────────
+// EXCEL PARSING
+// ─────────────────────────────────────────────
+document.getElementById('excel-btn').addEventListener('click', () => {
+  document.getElementById('excel-input').click();
+});
+document.getElementById('excel-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  if (window._xlsxLoadFailed || typeof XLSX === 'undefined') {
+    showToast('⚠️ XLSX kitabxanası yüklənməyib. İnternet bağlantısını yoxlayın.');
+    return;
+  }
+  showProgress('Excel oxunur...', file.name);
+  await new Promise(r => setTimeout(r, 60));
+  try {
+    const buf = await file.arrayBuffer();
+    setProgress(20, 'Fayl oxunur...');
+    await new Promise(r => setTimeout(r, 30));
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    setProgress(40, `${rows.length} sətir tapıldı`);
+    await new Promise(r => setTimeout(r, 30));
+
+    const products = [];
+    const CHUNK = 200;
+    for (let start = 0; start < rows.length; start += CHUNK) {
+      const end = Math.min(start + CHUNK, rows.length);
+      for (let ri = start; ri < end; ri++) {
+        const row = rows[ri];
+        const ad = String(row[1] || '').trim();
+        const artikul = String(row[5] || '').trim();
+        if (!ad && !artikul) continue;
+        products.push({
+          ad,
+          barkod: String(row[4] || '').trim(),
+          artikul,
+          tedarikci: String(row[6] || '').trim(),
+          saxlamaYeri: String(row[8] || '').trim(),
+          qarayev: parseFloat(row[10]) || 0,
+          razin: parseFloat(row[11]) || 0,
+          esas: parseFloat(row[12]) || 0,
+          alishQiymeti: parseFloat(row[14]) || 0,
+          topdanQiymeti: parseFloat(row[15]) || 0,
+          perakendeQiymeti: parseFloat(row[16]) || 0,
+        });
+      }
+      const pct = 40 + ((end / rows.length) * 40);
+      setProgress(pct, `${products.length} məhsul işləndi`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    setProgress(82, 'IndexedDB-yə yazılır...');
+    await new Promise(r => setTimeout(r, 30));
+
+    const BATCH = 400;
+    for (let i = 0; i < products.length; i += BATCH) {
+      await dbPutAll('products', products.slice(i, i + BATCH));
+      setProgress(82 + ((i / products.length) * 16), `${i} / ${products.length}`);
+    }
+
+    setProgress(100, 'Tamamlandı');
+    allProducts = products;
+    buildLocationDropdown();
+    applyFilters();
+    updateStatus();
+    await new Promise(r => setTimeout(r, 300));
+    hideProgress();
+    showToast(`✅ ${products.length} məhsul idxal edildi`);
+  } catch (err) {
+    hideProgress();
+    setStatusError('Excel oxunarkən xəta: ' + err.message);
+    console.error(err);
+  }
+});
+
+// ─────────────────────────────────────────────
+// IMAGE FOLDER IMPORT
+// ─────────────────────────────────────────────
+document.getElementById('images-btn').addEventListener('click', () => {
+  document.getElementById('images-input').click();
+});
+document.getElementById('images-input').addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files).filter(f =>
+    /\.(jpe?g|png|webp|bmp|gif)$/i.test(f.name)
+  );
+  e.target.value = '';
+  if (!files.length) { showToast('Şəkil faylı tapılmadı'); return; }
+
+  showProgress('Şəkillər idxal edilir...', `${files.length} fayl tapıldı`);
+
+  Object.values(imageMap).forEach(u => URL.revokeObjectURL(u));
+  imageMap = {};
+
+  const CHUNK = 40;
+  let processed = 0;
+
+  for (let start = 0; start < files.length; start += CHUNK) {
+    const chunk = files.slice(start, start + CHUNK);
+    const dbItems = [];
+    for (const file of chunk) {
+      const nameNoExt = file.name.replace(/\.[^.]+$/, '').toLowerCase();
+      const blob = file.slice(0, file.size, file.type);
+      imageMap[nameNoExt] = URL.createObjectURL(blob);
+      dbItems.push({ artikul: nameNoExt, blob, type: file.type });
+      processed++;
+    }
+    try {
+      await dbPutAll('images', dbItems);
+    } catch(err) {
+      console.warn('Image DB write error:', err);
+    }
+    const pct = (processed / files.length) * 100;
+    setProgress(pct, `${processed} / ${files.length} şəkil`);
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  setProgress(100, 'Tamamlandı');
+  applyFilters();
+  updateStatus();
+  await new Promise(r => setTimeout(r, 300));
+  hideProgress();
+  showToast(`✅ ${processed} şəkil idxal edildi`);
+});
+
+// ─────────────────────────────────────────────
+// FILTERING & SORTING
+// ─────────────────────────────────────────────
+function applyFilters() {
+  const wh = filters.warehouse;
+  const pt = filters.priceType;
+  const locMode = filters.locationMode;
+  const sup = filters.supplier.toLowerCase();
+  const sMin = filters.stockMin;
+  const sMax = filters.stockMax;
+  const pMin = filters.priceMin;
+  const pMax = filters.priceMax;
+  const onlyImg = filters.onlyWithImage;
+  const sortBy = filters.sortBy;
+  const sortDir = filters.sortDir;
+  const nameWords = searchName.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const codeQ = searchCode.trim().toLowerCase();
+
+  let result = allProducts.filter(p => {
+    if (nameWords.length) {
+      const n = p.ad.toLowerCase();
+      if (!nameWords.every(w => n.includes(w))) return false;
+    }
+    if (codeQ) {
+      if (!p.barkod.toLowerCase().includes(codeQ) && !p.artikul.toLowerCase().includes(codeQ)) return false;
+    }
+    if (locMode === 'asagi') {
+      if (!p.saxlamaYeri.toLowerCase().includes('aşağı') && !p.saxlamaYeri.toLowerCase().includes('asagi')) return false;
+    } else if (locMode === 'yuxari') {
+      if (!p.saxlamaYeri.toLowerCase().includes('yuxarı') && !p.saxlamaYeri.toLowerCase().includes('yuxari')) return false;
+    }
+    if (sup && !p.tedarikci.toLowerCase().includes(sup)) return false;
+    const stock = p[wh] || 0;
+    if (stock < sMin) return false;
+    if (stock > sMax) return false;
+    const price = p[pt] || 0;
+    if (price < pMin) return false;
+    if (price > pMax) return false;
+    if (onlyImg && !imageMap[p.artikul.toLowerCase()]) return false;
+    return true;
+  });
+
+  result.sort((a, b) => {
+    let va, vb;
+    if (sortBy === 'name') {
+      va = a.ad.toLowerCase(); vb = b.ad.toLowerCase();
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    } else if (sortBy === 'price') {
+      va = a[pt] || 0; vb = b[pt] || 0;
+    } else {
+      va = a[wh] || 0; vb = b[wh] || 0;
+    }
+    return sortDir === 'asc' ? va - vb : vb - va;
+  });
+
+  filteredProducts = result;
+  displayLimit = PAGE_SIZE;
+  renderProducts();
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+const productList = document.getElementById('product-list');
+const emptyState = document.getElementById('empty-state');
+const loadingMore = document.getElementById('loading-more');
+
+function renderProducts() {
+  const slice = filteredProducts.slice(0, displayLimit);
+  const wh = filters.warehouse;
+  const pt = filters.priceType;
+
+  const tabCount = document.getElementById('tab-count');
+  tabCount.textContent = filteredProducts.length > 0 ? filteredProducts.length : '';
+
+  if (!slice.length) {
+    productList.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  const frag = document.createDocumentFragment();
+  slice.forEach(p => {
+    frag.appendChild(createCard(p, wh, pt));
+  });
+  productList.innerHTML = '';
+  productList.appendChild(frag);
+  loadingMore.style.display = displayLimit < filteredProducts.length ? 'block' : 'none';
+}
+
+function createCard(p, wh, pt) {
+  const div = document.createElement('div');
+  div.className = 'product-card';
+  div.dataset.artikul = p.artikul;
+
+  const imgKey = p.artikul.toLowerCase();
+  const imgSrc = imageMap[imgKey];
+  const stock = p[wh] || 0;
+  const price = p[pt] || 0;
+
+  div.innerHTML = `
+    <div class="card-img-wrap">
+      ${imgSrc
+        ? `<img class="card-img" src="${imgSrc}" alt="${p.ad}" loading="lazy">`
+        : `<span class="card-img-placeholder">📦</span>`}
+    </div>
+    <div class="card-info">
+      <div class="card-name">${esc(p.ad) || '(adsız)'}</div>
+      <div class="card-meta"><b>${esc(p.barkod) || '—'} · ${esc(p.artikul) || '—'}</b></div>
+    </div>
+    <div class="card-right">
+      <div class="price-tag">${price ? numFmt(price) : '— ₼'}</div>
+      <div class="stock-badge${stock === 0 ? ' zero' : ''}">${stock} əd.</div>
+    </div>
+  `;
+  div.addEventListener('click', () => openModal(p));
+  return div;
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────────
+// INFINITE SCROLL
+// ─────────────────────────────────────────────
+const sentinel = document.getElementById('sentinel');
+const observer = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && displayLimit < filteredProducts.length) {
+    displayLimit += PAGE_SIZE;
+    renderProducts();
+  }
+}, { rootMargin: '200px' });
+observer.observe(sentinel);
+
+function buildLocationDropdown() {}
+
+// ─────────────────────────────────────────────
+// FILTER CONTROLS
+// ─────────────────────────────────────────────
+document.getElementById('wh-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn');
+  if (!btn) return;
+  document.querySelectorAll('#wh-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filters.warehouse = btn.dataset.wh;
+  applyFilters();
+});
+
+document.getElementById('price-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn');
+  if (!btn) return;
+  document.querySelectorAll('#price-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filters.priceType = btn.dataset.price;
+  applyFilters();
+});
+
+document.getElementById('loc-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn');
+  if (!btn) return;
+  document.querySelectorAll('#loc-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filters.locationMode = btn.dataset.loc;
+  applyFilters();
+});
+
+const supplierInput = document.getElementById('filter-supplier');
+supplierInput.addEventListener('input', debounce(e => {
+  filters.supplier = e.target.value;
+  applyFilters();
+}, 300));
+
+document.getElementById('filter-stock-min').addEventListener('input', debounce(e => {
+  filters.stockMin = parseFloat(e.target.value) || 0;
+  applyFilters();
+}, 300));
+document.getElementById('filter-stock-max').addEventListener('input', debounce(e => {
+  const v = parseFloat(e.target.value);
+  filters.stockMax = isNaN(v) ? Infinity : v;
+  applyFilters();
+}, 300));
+
+document.getElementById('filter-price-min').addEventListener('input', debounce(e => {
+  filters.priceMin = parseFloat(e.target.value) || 0;
+  applyFilters();
+}, 300));
+document.getElementById('filter-price-max').addEventListener('input', debounce(e => {
+  const v = parseFloat(e.target.value);
+  filters.priceMax = isNaN(v) ? Infinity : v;
+  applyFilters();
+}, 300));
+
+document.getElementById('filter-only-img').addEventListener('change', e => {
+  filters.onlyWithImage = e.target.checked;
+  applyFilters();
+});
+
+document.getElementById('filter-sort').addEventListener('change', e => {
+  filters.sortBy = e.target.value;
+  applyFilters();
+});
+document.getElementById('filter-dir').addEventListener('change', e => {
+  filters.sortDir = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('search-name').addEventListener('input', debounce(e => {
+  searchName = e.target.value;
+  applyFilters();
+}, 300));
+document.getElementById('search-code').addEventListener('input', debounce(e => {
+  searchCode = e.target.value;
+  applyFilters();
+}, 300));
+
+document.getElementById('reset-filters-btn').addEventListener('click', () => {
+  filters = {
+    warehouse: 'qarayev',
+    priceType: 'perakendeQiymeti',
+    locationMode: '',
+    supplier: '',
+    stockMin: 0,
+    stockMax: Infinity,
+    priceMin: 0,
+    priceMax: Infinity,
+    onlyWithImage: false,
+    sortBy: 'name',
+    sortDir: 'asc',
+  };
+  searchName = '';
+  searchCode = '';
+
+  document.getElementById('search-name').value = '';
+  document.getElementById('search-code').value = '';
+  document.getElementById('filter-supplier').value = '';
+  document.getElementById('filter-stock-min').value = '';
+  document.getElementById('filter-stock-max').value = '';
+  document.getElementById('filter-price-min').value = '';
+  document.getElementById('filter-price-max').value = '';
+  document.getElementById('filter-only-img').checked = false;
+  document.getElementById('filter-sort').value = 'name';
+  document.getElementById('filter-dir').value = 'asc';
+
+  document.querySelectorAll('#wh-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.wh === 'qarayev'));
+  document.querySelectorAll('#price-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.price === 'perakendeQiymeti'));
+  document.querySelectorAll('#loc-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.loc === ''));
+
+  applyFilters();
+  showToast('Filterlər sıfırlandı');
+});
+
+// ── TABS ──
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  const tabId = btn.dataset.tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tabId + '-panel').classList.add('active');
+});
+
+// ── MODAL & FULLSCREEN ──
+const modalOverlay = document.getElementById('modal-overlay');
+const detailModal = document.getElementById('detail-modal');
+const modalBody = document.getElementById('modal-body');
+const modalTitle = document.getElementById('modal-title');
+
+function openModal(p) {
+  modalTitle.textContent = p.ad || '(adsız)';
+  const wh = filters.warehouse;
+  const pt = filters.priceType;
+  const imgKey = p.artikul.toLowerCase();
+  const imgSrc = imageMap[imgKey];
+
+  modalBody.innerHTML = `
+    <div class="modal-img-wrap" id="modal-img-trigger">
+      ${imgSrc
+        ? `<img class="modal-img" src="${imgSrc}" alt="${esc(p.ad)}" id="modal-main-img">`
+        : `<div class="modal-no-img">📦</div>`}
+    </div>
+    <div class="detail-row"><div class="detail-key">Barkod</div><div class="detail-val">${esc(p.barkod) || '—'}</div></div>
+    <div class="detail-row"><div class="detail-key">Artikul</div><div class="detail-val">${esc(p.artikul) || '—'}</div></div>
+    <div class="detail-row">
+      <div class="detail-key">Anbar stoku</div>
+      <div class="detail-val"><div class="warehouse-grid">
+        <div class="wh-cell${wh==='qarayev'?' active':''}"><div class="wh-cell-label">Qarayev</div><div class="wh-cell-val">${p.qarayev}</div></div>
+        <div class="wh-cell${wh==='razin'?' active':''}"><div class="wh-cell-label">Razin</div><div class="wh-cell-val">${p.razin}</div></div>
+        <div class="wh-cell${wh==='esas'?' active':''}"><div class="wh-cell-label">Əsas</div><div class="wh-cell-val">${p.esas}</div></div>
+      </div></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">Qiymətlər</div>
+      <div class="detail-val"><div class="price-grid">
+        <div class="price-cell${pt==='perakendeQiymeti'?' active':''}"><div class="price-cell-label">Pərakəndə</div><div class="price-cell-val">${numFmt(p.perakendeQiymeti)}</div></div>
+        <div class="price-cell${pt==='topdanQiymeti'?' active':''}"><div class="price-cell-label">Topdan</div><div class="price-cell-val">${numFmt(p.topdanQiymeti)}</div></div>
+        <div class="price-cell${pt==='alishQiymeti'?' active':''}"><div class="price-cell-label">Alış</div><div class="price-cell-val">${numFmt(p.alishQiymeti)}</div></div>
+      </div></div>
+    </div>
+    <div class="detail-row"><div class="detail-key">Tədarükçü</div><div class="detail-val">${esc(p.tedarikci) || '—'}</div></div>
+    <div class="detail-row"><div class="detail-key">Saxlama yeri</div><div class="detail-val">${esc(p.saxlamaYeri) || '—'}</div></div>
+  `;
+  if (imgSrc) document.getElementById('modal-img-trigger').addEventListener('click', () => openFullscreen(imgSrc));
+  modalOverlay.classList.add('open');
+  requestAnimationFrame(() => detailModal.classList.add('open'));
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  detailModal.classList.remove('open');
+  setTimeout(() => { modalOverlay.classList.remove('open'); document.body.style.overflow = ''; }, 320);
+}
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('modal-close-bottom').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', closeModal);
+document.getElementById('detail-modal').addEventListener('click', e => e.stopPropagation());
+
+const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+const fullscreenImg = document.getElementById('fullscreen-img');
+function openFullscreen(src) { fullscreenImg.src = src; fullscreenOverlay.classList.add('open'); }
+function closeFullscreen() { fullscreenOverlay.classList.remove('open'); fullscreenImg.src = ''; }
+document.getElementById('fullscreen-close').addEventListener('click', closeFullscreen);
+fullscreenOverlay.addEventListener('click', e => { if (e.target === fullscreenOverlay) closeFullscreen(); });
+document.getElementById('product-list').addEventListener('click', e => {
+  const img = e.target.closest('.card-img');
+  if (img) { e.stopPropagation(); openFullscreen(img.src); }
+});
+
+// ── BARCODE SCANNER ──
+const cameraOverlay = document.getElementById('camera-overlay');
+const cameraVideo = document.getElementById('camera-video');
+let cameraStream = null, scanActive = false;
+let barcodeDetector = null;
+if ('BarcodeDetector' in window) {
+  try { barcodeDetector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e'] }); } catch(e) { barcodeDetector = null; }
+}
+document.getElementById('scan-btn').addEventListener('click', startCamera);
+document.getElementById('camera-close-btn').addEventListener('click', stopCamera);
+async function startCamera() {
+  if (!barcodeDetector) { alert('Bu cihaz/brauzer BarcodeDetector API-ni dəstəkləmir.\nBarkodu əl ilə daxil edin.'); return; }
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+    cameraVideo.srcObject = cameraStream;
+    cameraOverlay.classList.add('open');
+    scanActive = true;
+    requestAnimationFrame(scanFrame);
+  } catch(err) { alert('Kamera açılmadı: ' + err.message + '\nBarkodu əl ilə daxil edin.'); }
+}
+async function scanFrame() {
+  if (!scanActive) return;
+  if (cameraVideo.readyState >= 2) {
+    try {
+      const results = await barcodeDetector.detect(cameraVideo);
+      if (results.length > 0) {
+        const code = results[0].rawValue;
+        stopCamera();
+        document.getElementById('search-code').value = code;
+        searchCode = code;
+        applyFilters();
+        document.querySelector('[data-tab="products"]').click();
+        showToast('📷 Barkod skan edildi: ' + code);
+        return;
+      }
+    } catch(e) {}
+  }
+  if (scanActive) requestAnimationFrame(scanFrame);
+}
+function stopCamera() {
+  scanActive = false;
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  cameraVideo.srcObject = null;
+  cameraOverlay.classList.remove('open');
+}
+
+// ── LOAD FROM INDEXEDDB ──
+async function loadFromDB() {
+  try {
+    showProgress('Yüklənir...', 'Saxlanmış məlumatlar oxunur');
+    setProgress(10);
+    await openDB();
+    setProgress(30, 'Məhsullar oxunur...');
+    const products = await dbGetAll('products');
+    setProgress(55, 'Şəkillər oxunur...');
+    const images = await dbGetAll('images');
+    for (const img of images) {
+      try { imageMap[img.artikul] = URL.createObjectURL(img.blob); } catch(e) {}
+    }
+    setProgress(85, 'Hazırlanır...');
+    allProducts = products;
+    buildLocationDropdown();
+    applyFilters();
+    updateStatus();
+    setProgress(100);
+    await new Promise(r => setTimeout(r, 200));
+    hideProgress();
+    if (!products.length) document.getElementById('status-line').textContent = 'Excel faylı idxal edin';
+  } catch(err) { hideProgress(); console.warn('DB load error:', err); document.getElementById('status-line').textContent = 'Məlumat yüklənmədi — Excel idxal edin'; }
+}
+loadFromDB();
+</script>
+</body>
+</html>
