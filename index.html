@@ -835,7 +835,7 @@
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Hidden file inputs */
-    #excel-input, #images-input { display: none; }
+    #excel-input, #images-input, #zip-input { display: none; }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -915,6 +915,10 @@
           <span class="ib-icon">🖼️</span>
           <span>Şəkil qovluğu idxal et</span>
         </button>
+        <button class="import-btn" id="zip-btn">
+          <span class="ib-icon">📚️</span>
+          <span>Şəkillər ZIP faylından idxal et</span>
+        </button>
       </div>
 
       <!-- Warehouse -->
@@ -973,9 +977,9 @@
         </div>
       </div>
 
-      <!-- NEW: Price range filter -->
+      <!-- Satış qiyməti aralığı (Pərakəndə / Topdan) -->
       <div class="filter-section">
-        <div class="filter-section-title">💰 Qiymət aralığı (₼)</div>
+        <div class="filter-section-title">💰 Satış qiyməti aralığı (₼)</div>
         <div class="filter-row">
           <div class="filter-col">
             <label class="filter-label">Min</label>
@@ -984,6 +988,21 @@
           <div class="filter-col">
             <label class="filter-label">Max</label>
             <input class="filter-input" id="filter-price-max" type="number" step="0.01" placeholder="∞" min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Alış qiyməti aralığı (NEW) -->
+      <div class="filter-section">
+        <div class="filter-section-title">🛒 Alış qiyməti aralığı (₼)</div>
+        <div class="filter-row">
+          <div class="filter-col">
+            <label class="filter-label">Min</label>
+            <input class="filter-input" id="filter-alish-min" type="number" step="0.01" placeholder="0" min="0">
+          </div>
+          <div class="filter-col">
+            <label class="filter-label">Max</label>
+            <input class="filter-input" id="filter-alish-max" type="number" step="0.01" placeholder="∞" min="0">
           </div>
         </div>
       </div>
@@ -1050,7 +1069,7 @@
       </div>
       <div class="about-card">
         <h2>🖼️ Şəkil qovluğu</h2>
-        <p>Şəkil fayllarının adı (uzantısız) məhsulun <strong>Artikul</strong> kodu ilə eyni olmalıdır. Məs: <code>ABC123.jpg</code> → artikul <code>ABC123</code> olan məhsula uyğunlaşır.</p>
+        <p>Şəkil fayllarının adı (uzantısız) məhsulun <strong>Artikul</strong> kodu ilə eyni olmalıdır. Məs: <code>ABC123.jpg</code> → artikul <code>ABC123</code> olan məhsula uyğunlaşır. Şəkilləri qovluq kimi və ya ZIP/RAR arxivi şəklində idxal edə bilərsiniz.</p>
       </div>
       <div class="about-card">
         <h2>📷 Barkod skaneri</h2>
@@ -1061,6 +1080,7 @@
         <ul>
           <li>Anbar seçimini dəyişərək hər anbar üçün stoku görə bilərsiniz.</li>
           <li>Filterlər tabından qiymət növü, yer, stok aralığı təyin edə bilərsiniz.</li>
+          <li>Satış qiyməti və alış qiyməti üzrə ayrı-ayrı aralıq filterleri mövcuddur.</li>
           <li>Şəkilli məhsullar kartın sol tərəfindəki kiçik şəkillə görünür.</li>
           <li>Məhsul kartına toxunaraq tam məlumat görə bilərsiniz.</li>
           <li>Tam ekran şəkil üçün modalda şəklə toxunun.</li>
@@ -1117,10 +1137,14 @@
 <!-- Hidden inputs -->
 <input type="file" id="excel-input" accept=".xlsx,.xls">
 <input type="file" id="images-input" multiple webkitdirectory accept="image/*">
+<input type="file" id="zip-input" accept=".zip,.rar">
 
 <!-- XLSX library -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"
         onerror="window._xlsxLoadFailed=true"></script>
+<!-- JSZip library for ZIP extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        onerror="window._jszipLoadFailed=true"></script>
 
 <script>
 'use strict';
@@ -1206,6 +1230,8 @@ let filters = {
   stockMax: Infinity,
   priceMin: 0,
   priceMax: Infinity,
+  alishMin: 0,
+  alishMax: Infinity,
   onlyWithImage: false,
   sortBy: 'name',
   sortDir: 'asc',
@@ -1406,6 +1432,116 @@ document.getElementById('images-input').addEventListener('change', async (e) => 
 });
 
 // ─────────────────────────────────────────────
+// ZIP / RAR IMAGE IMPORT
+// ─────────────────────────────────────────────
+document.getElementById('zip-btn').addEventListener('click', () => {
+  document.getElementById('zip-input').click();
+});
+document.getElementById('zip-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+
+  const isZip = /\.zip$/i.test(file.name);
+  const isRar = /\.rar$/i.test(file.name);
+
+  if (isRar) {
+    // RAR format is not natively supported by JSZip; inform user
+    showToast('⚠️ RAR formatı dəstəklənmir. Zəhmət olmasa ZIP formatına çevirin.');
+    return;
+  }
+
+  if (!isZip) {
+    showToast('⚠️ Yalnız .zip faylları dəstəklənir.');
+    return;
+  }
+
+  if (window._jszipLoadFailed || typeof JSZip === 'undefined') {
+    showToast('⚠️ JSZip kitabxanası yüklənməyib. İnternet bağlantısını yoxlayın.');
+    return;
+  }
+
+  showProgress('ZIP açılır...', file.name);
+  await new Promise(r => setTimeout(r, 60));
+
+  try {
+    const buf = await file.arrayBuffer();
+    setProgress(15, 'ZIP oxunur...');
+    const zip = await JSZip.loadAsync(buf);
+
+    // Collect image entries
+    const imageEntries = [];
+    zip.forEach((relativePath, zipEntry) => {
+      if (!zipEntry.dir && /\.(jpe?g|png|webp|bmp|gif)$/i.test(zipEntry.name)) {
+        imageEntries.push(zipEntry);
+      }
+    });
+
+    if (!imageEntries.length) {
+      hideProgress();
+      showToast('ZIP içində şəkil tapılmadı');
+      return;
+    }
+
+    setProgress(20, `${imageEntries.length} şəkil tapıldı`);
+
+    // Clear existing images
+    Object.values(imageMap).forEach(u => URL.revokeObjectURL(u));
+    imageMap = {};
+
+    const CHUNK = 20;
+    let processed = 0;
+
+    for (let start = 0; start < imageEntries.length; start += CHUNK) {
+      const chunk = imageEntries.slice(start, start + CHUNK);
+      const dbItems = [];
+
+      for (const entry of chunk) {
+        try {
+          // Get just the filename (ignore folder structure inside zip)
+          const fileName = entry.name.split('/').pop();
+          const nameNoExt = fileName.replace(/\.[^.]+$/, '').toLowerCase();
+
+          // Detect mime type from extension
+          const ext = fileName.split('.').pop().toLowerCase();
+          const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', bmp: 'image/bmp', gif: 'image/gif' };
+          const mimeType = mimeMap[ext] || 'image/jpeg';
+
+          const uint8 = await entry.async('uint8array');
+          const blob = new Blob([uint8], { type: mimeType });
+          imageMap[nameNoExt] = URL.createObjectURL(blob);
+          dbItems.push({ artikul: nameNoExt, blob, type: mimeType });
+          processed++;
+        } catch(entryErr) {
+          console.warn('ZIP entry error:', entry.name, entryErr);
+        }
+      }
+
+      try {
+        await dbPutAll('images', dbItems);
+      } catch(dbErr) {
+        console.warn('Image DB write error:', dbErr);
+      }
+
+      const pct = 20 + ((processed / imageEntries.length) * 78);
+      setProgress(pct, `${processed} / ${imageEntries.length} şəkil`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    setProgress(100, 'Tamamlandı');
+    applyFilters();
+    updateStatus();
+    await new Promise(r => setTimeout(r, 300));
+    hideProgress();
+    showToast(`✅ ${processed} şəkil ZIP-dən idxal edildi`);
+  } catch (err) {
+    hideProgress();
+    setStatusError('ZIP oxunarkən xəta: ' + err.message);
+    console.error(err);
+  }
+});
+
+// ─────────────────────────────────────────────
 // FILTERING & SORTING
 // ─────────────────────────────────────────────
 function applyFilters() {
@@ -1417,6 +1553,8 @@ function applyFilters() {
   const sMax = filters.stockMax;
   const pMin = filters.priceMin;
   const pMax = filters.priceMax;
+  const aMin = filters.alishMin;
+  const aMax = filters.alishMax;
   const onlyImg = filters.onlyWithImage;
   const sortBy = filters.sortBy;
   const sortDir = filters.sortDir;
@@ -1443,6 +1581,9 @@ function applyFilters() {
     const price = p[pt] || 0;
     if (price < pMin) return false;
     if (price > pMax) return false;
+    const alish = p.alishQiymeti || 0;
+    if (alish < aMin) return false;
+    if (alish > aMax) return false;
     if (onlyImg && !imageMap[p.artikul.toLowerCase()]) return false;
     return true;
   });
@@ -1599,6 +1740,17 @@ document.getElementById('filter-price-max').addEventListener('input', debounce(e
   applyFilters();
 }, 300));
 
+// NEW: Alış qiyməti filter listeners
+document.getElementById('filter-alish-min').addEventListener('input', debounce(e => {
+  filters.alishMin = parseFloat(e.target.value) || 0;
+  applyFilters();
+}, 300));
+document.getElementById('filter-alish-max').addEventListener('input', debounce(e => {
+  const v = parseFloat(e.target.value);
+  filters.alishMax = isNaN(v) ? Infinity : v;
+  applyFilters();
+}, 300));
+
 document.getElementById('filter-only-img').addEventListener('change', e => {
   filters.onlyWithImage = e.target.checked;
   applyFilters();
@@ -1632,6 +1784,8 @@ document.getElementById('reset-filters-btn').addEventListener('click', () => {
     stockMax: Infinity,
     priceMin: 0,
     priceMax: Infinity,
+    alishMin: 0,
+    alishMax: Infinity,
     onlyWithImage: false,
     sortBy: 'name',
     sortDir: 'asc',
@@ -1646,6 +1800,8 @@ document.getElementById('reset-filters-btn').addEventListener('click', () => {
   document.getElementById('filter-stock-max').value = '';
   document.getElementById('filter-price-min').value = '';
   document.getElementById('filter-price-max').value = '';
+  document.getElementById('filter-alish-min').value = '';
+  document.getElementById('filter-alish-max').value = '';
   document.getElementById('filter-only-img').checked = false;
   document.getElementById('filter-sort').value = 'name';
   document.getElementById('filter-dir').value = 'asc';
