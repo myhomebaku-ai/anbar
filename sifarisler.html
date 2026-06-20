@@ -2,849 +2,2310 @@
 <html lang="az">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
-  <title>Sifarişlər - Pro Anbar İdarəetmə</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a2c3e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sifarişlər">
+  <title>Sifarişlər</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --primary: #1a2c3e;
+      --accent: #2c5282;
+      --accent-light: #ebf4ff;
+      --accent-mid: #bee3f8;
+      --text: #1a202c;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --green: #276749;
+      --green-bg: #f0fff4;
+      --red: #c53030;
+      --red-bg: #fff5f5;
+      --orange: #c05621;
+      --orange-bg: #fffaf0;
+      --blue-badge: #2b6cb0;
+      --blue-badge-text: #ebf8ff;
+      --whatsapp: #25D366;
+      --whatsapp-dark: #128C7E;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.18);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --header-h: 64px;
+      --tab-h: 54px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      flex-shrink: 0;
+      height: var(--header-h);
+      background: linear-gradient(135deg, var(--primary) 0%, #243b55 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      position: relative;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    #back-btn {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+    }
+    #back-btn:active { background: rgba(255,255,255,0.22); }
+    #header-title { flex: 1; min-width: 0; }
+    #header-title h1 { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+    #header-sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+    #new-order-btn {
+      flex-shrink: 0;
+      height: 38px;
+      padding: 0 14px;
+      border: none;
+      background: rgba(255,255,255,0.18);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 13px;
+      font-family: var(--font);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+    }
+    #new-order-btn:active { background: rgba(255,255,255,0.28); }
+
+    /* ── TABS ── */
+    #tabs {
+      flex-shrink: 0;
+      height: var(--tab-h);
+      background: var(--surface);
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 98;
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      font-size: 12px;
+      font-family: var(--font);
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px;
+      padding: 4px 0;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .tab-btn .tab-icon { font-size: 18px; }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 2.5px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+    .tab-badge {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 8px;
+      margin-left: 3px;
+      vertical-align: middle;
+      line-height: 14px;
+      min-width: 18px;
+      text-align: center;
+    }
+    .tab-badge:empty { display: none; }
+
+    /* ── CONTENT ── */
+    #tab-content { flex: 1; overflow: hidden; position: relative; }
+    .tab-panel { display: none; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+    .tab-panel.active { display: block; }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+      background: var(--primary);
+      padding: 8px 12px 10px;
+      display: flex;
+      gap: 8px;
+    }
+    .search-input-wrap { flex: 1; position: relative; display: flex; align-items: center; }
+    .search-input-wrap .si { position: absolute; left: 10px; color: rgba(255,255,255,0.5); font-size: 14px; pointer-events: none; }
+    .search-input {
+      width: 100%; height: 38px;
+      border: none; border-radius: 10px;
+      background: rgba(255,255,255,0.13);
+      color: #fff; font-size: 14px; font-family: var(--font);
+      padding: 0 10px 0 32px; outline: none;
       -webkit-tap-highlight-color: transparent;
     }
+    .search-input::placeholder { color: rgba(255,255,255,0.45); }
+    .search-input:focus { background: rgba(255,255,255,0.2); }
 
-    body {
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #f1f5f9;
-      color: #0f172a;
-      padding-bottom: env(safe-area-inset-bottom, 0);
-    }
-
-    /* header */
-    .header {
-      background: #0f172a;
-      backdrop-filter: blur(12px);
-      padding: 14px 20px;
+    /* ── FILTER STRIP ── */
+    .filter-strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .logo-area h2 { color: white; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.3px; }
-    .back-home {
-      background: rgba(255,255,255,0.12);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 40px;
-      color: white;
-      font-weight: 500;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: 0.2s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .back-home:active { background: rgba(255,255,255,0.25); }
-
-    /* main container */
-    .main-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 16px 14px 28px;
-    }
-
-    /* orders horizontal scroller */
-    .orders-strip {
-      margin-bottom: 24px;
-    }
-    .section-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #475569;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .orders-scroll {
-      display: flex;
-      gap: 12px;
+      gap: 8px;
       overflow-x: auto;
-      padding-bottom: 10px;
-      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
     }
-    .order-chip {
-      background: white;
-      border-radius: 28px;
-      padding: 12px 18px;
-      min-width: 200px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      border: 1px solid #e2e8f0;
-      transition: all 0.2s;
+    .filter-strip::-webkit-scrollbar { display: none; }
+    .seg-control { display: flex; background: var(--bg); border-radius: var(--radius-sm); padding: 3px; gap: 3px; flex-shrink: 0; }
+    .seg-btn {
+      flex: 1; border: none; background: none;
+      border-radius: 8px; font-size: 12px; font-family: var(--font); font-weight: 500;
+      color: var(--text-secondary); padding: 6px 10px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+    .seg-btn.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow-sm); font-weight: 600; }
+
+    /* ── CATALOG PANEL ── */
+    #catalog-panel { padding: 10px; }
+    .catalog-grid { display: grid; gap: 8px; }
+
+    .product-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, box-shadow 0.12s, border-color 0.15s;
+      will-change: transform;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .product-card:active { transform: scale(0.985); box-shadow: var(--shadow-md); }
+    .product-card.in-cart { border-color: var(--accent); background: var(--accent-light); }
+    .product-card.in-cart .card-name { color: var(--accent); }
+
+    .card-img-wrap {
+      flex-shrink: 0; width: 68px; height: 68px;
+      border-radius: 14px; background: #f7fafc;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .card-img { width: 100%; height: 100%; object-fit: contain; }
+    .card-img-placeholder { font-size: 26px; opacity: 0.25; }
+    .card-info { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.35; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-meta { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .price-tag { font-size: 14px; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .stock-badge {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; background: var(--blue-badge); color: var(--blue-badge-text); white-space: nowrap;
+    }
+    .stock-badge.zero { background: var(--red); color: #fff; }
+    .in-cart-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+    }
+    .add-btn {
+      width: 34px; height: 34px;
+      border: none; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, transform 0.1s;
       flex-shrink: 0;
     }
-    .order-chip.active {
-      background: #eef2ff;
-      border-left: 5px solid #2563eb;
-      border-color: #2563eb;
-      box-shadow: 0 8px 18px rgba(37,99,235,0.12);
-    }
-    .order-chip h4 {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .order-chip p { font-size: 0.7rem; color: #475569; margin-top: 4px; }
-    .order-chip .total-badge { font-weight: 800; color: #16a34a; }
+    .add-btn:active { transform: scale(0.88); }
+    .add-btn.added { background: var(--green); }
 
-    /* editor card */
-    .editor-card {
-      background: white;
-      border-radius: 32px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      padding: 20px 18px;
-      margin-bottom: 28px;
-      transition: all 0.2s;
-    }
-    .flex-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-    .input-group {
-      flex: 1;
-      min-width: 150px;
-    }
-    .input-group label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #334155;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .input-group input, .input-group textarea {
-      width: 100%;
+    /* empty */
+    .empty-state { padding: 60px 24px; text-align: center; display: none; }
+    .empty-state.show { display: block; }
+    .es-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-state h3 { font-size: 17px; color: var(--text-secondary); font-weight: 600; margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    /* sentinel */
+    #catalog-sentinel { height: 32px; }
+    #catalog-loading { display: none; text-align: center; padding: 12px; color: var(--text-muted); font-size: 13px; }
+
+    /* ── CART PANEL ── */
+    #cart-panel { padding: 10px 10px calc(var(--safe-bottom) + 10px); }
+
+    .cart-empty { padding: 60px 24px; text-align: center; display: none; }
+    .cart-empty.show { display: block; }
+
+    /* Cart toolbar */
+    .cart-toolbar {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
       padding: 12px 14px;
-      border-radius: 20px;
-      border: 1.5px solid #e2e8f0;
-      background: #fafcff;
-      font-size: 0.9rem;
-      transition: 0.2s;
-      font-family: inherit;
-    }
-    .input-group input:focus, .input-group textarea:focus {
-      border-color: #3b82f6;
-      outline: none;
-      background: white;
-    }
-
-    /* items table */
-    .items-table-wrapper {
-      overflow-x: auto;
-      margin: 16px 0 12px;
-      border-radius: 24px;
-      background: #f8fafc;
-      padding: 4px;
-    }
-    .order-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
-    .order-table th {
-      text-align: left;
-      padding: 12px 8px;
-      color: #334155;
-      font-weight: 600;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .order-table td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #edf2f7;
-      vertical-align: middle;
-    }
-    .qty-control {
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
       display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .qty-input {
-      width: 60px;
-      padding: 6px;
-      border-radius: 40px;
-      border: 1px solid #cbd5e1;
-      text-align: center;
-      font-weight: 500;
-    }
-    .item-note {
-      width: 120px;
-      padding: 6px 8px;
-      border-radius: 20px;
-      border: 1px solid #cbd5e1;
-      font-size: 0.7rem;
-    }
-    .remove-item-btn {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #ef4444;
-      padding: 6px;
-      border-radius: 30px;
-    }
-    .total-summary {
-      text-align: right;
-      font-size: 1.3rem;
-      font-weight: 800;
-      background: #f1f5f9;
-      padding: 12px 20px;
-      border-radius: 40px;
-      margin-top: 12px;
-    }
-
-    /* product grid area */
-    .product-palette {
-      background: #ffffffdd;
-      backdrop-filter: blur(2px);
-      border-radius: 32px;
-      padding: 18px;
-      margin-top: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    }
-    .filter-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    .search-mini {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 32px;
-      border: 1px solid #cbd5e1;
-      background: white;
-    }
-    .chip-group {
-      display: flex;
-      flex-wrap: wrap;
       gap: 8px;
-      margin: 12px 0;
+      align-items: center;
     }
-    .chip {
-      background: #f1f5f9;
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.1s;
-      border: none;
-    }
-    .chip.active {
-      background: #2563eb;
-      color: white;
-    }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
-      max-height: 480px;
-      overflow-y: auto;
-      padding: 6px 2px;
-    }
-    .product-tile {
-      background: white;
-      border-radius: 24px;
-      padding: 10px;
-      border: 1px solid #eef2ff;
-      transition: transform 0.1s, box-shadow 0.2s;
-      cursor: pointer;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .product-tile:active { transform: scale(0.97); }
-    .tile-img {
-      width: 100%;
-      height: 100px;
-      object-fit: contain;
-      background: #fafcff;
-      border-radius: 18px;
-      margin-bottom: 8px;
-    }
-    .tile-name {
-      font-weight: 700;
-      font-size: 0.8rem;
+    .ct-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); flex: 1; }
+    .ct-btn {
+      height: 34px; padding: 0 12px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      background: var(--bg); color: var(--text-secondary);
+      font-size: 12px; font-family: var(--font); font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      -webkit-tap-highlight-color: transparent;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-    .tile-price {
-      color: #16a34a;
-      font-weight: 800;
-      font-size: 0.85rem;
-      margin-top: 4px;
+    .ct-btn:active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    .ct-btn.danger:active { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+    /* Cart items */
+    .cart-item {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
     }
-    .tile-stock {
-      font-size: 0.65rem;
-      color: #475569;
+    .cart-item:last-of-type { margin-bottom: 0; }
+    .ci-top { display: flex; gap: 10px; align-items: flex-start; }
+    .ci-img-wrap {
+      flex-shrink: 0; width: 56px; height: 56px;
+      border-radius: 12px; background: #f7fafc;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
     }
-    .add-quick {
-      margin-top: 8px;
-      background: #2563eb;
-      border: none;
-      padding: 6px;
-      border-radius: 40px;
-      color: white;
-      font-weight: 600;
-      font-size: 0.7rem;
-      width: 100%;
+    .ci-img { width: 100%; height: 100%; object-fit: contain; }
+    .ci-img-ph { font-size: 22px; opacity: 0.25; }
+    .ci-info { flex: 1; min-width: 0; }
+    .ci-name {
+      font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 2px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ci-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+    .ci-price { font-size: 13px; font-weight: 700; color: var(--green); }
+    .ci-remove {
+      flex-shrink: 0; width: 30px; height: 30px;
+      border: none; border-radius: 50%;
+      background: var(--red-bg); color: var(--red);
+      font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+    }
+    .ci-remove:active { background: var(--red); color: #fff; }
+
+    /* Qty + price type row */
+    .ci-controls { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .qty-control {
+      display: flex; align-items: center; gap: 0;
+      background: var(--bg); border-radius: 10px;
+      border: 1.5px solid var(--border); overflow: hidden;
+    }
+    .qty-btn {
+      width: 34px; height: 34px;
+      border: none; background: none;
+      font-size: 18px; font-weight: 700; color: var(--accent);
       cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.12s;
+    }
+    .qty-btn:active { background: var(--accent-light); }
+    .qty-input {
+      width: 54px; height: 34px;
+      border: none; border-left: 1.5px solid var(--border); border-right: 1.5px solid var(--border);
+      background: var(--surface); text-align: center;
+      font-size: 14px; font-weight: 700; font-family: var(--font); color: var(--text);
+      outline: none;
+    }
+    .qty-unit {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      padding: 0 8px;
+      line-height: 34px;
     }
 
-    /* modal details */
-    .modal-mask {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0);
-      z-index: 1000;
-      display: none;
-      transition: background 0.25s;
+    .pt-select {
+      height: 34px; padding: 0 8px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      font-size: 12px; font-family: var(--font); font-weight: 500;
+      outline: none; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
-    .modal-mask.open { background: rgba(0,0,0,0.6); display: block; }
-    .detail-sheet {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      border-radius: 32px 32px 0 0;
-      max-height: 85vh;
-      overflow-y: auto;
+    .pt-select:focus { border-color: var(--accent); background: #fff; }
+
+    .ci-line-price {
+      font-size: 13.5px; font-weight: 700; color: var(--accent);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* Note area */
+    .ci-note-row { margin-top: 8px; }
+    .ci-note {
+      width: 100%; min-height: 42px; max-height: 120px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      font-size: 13px; font-family: var(--font);
+      padding: 8px 10px; outline: none; resize: vertical;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+    }
+    .ci-note:focus { border-color: var(--accent); background: #fff; }
+    .ci-note::placeholder { color: var(--text-muted); }
+
+    /* Cart summary */
+    .cart-summary {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .cs-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
+    .cs-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+    .cs-label { font-size: 13px; color: var(--text-secondary); }
+    .cs-val { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cs-total { border-top: 1.5px solid var(--border); margin-top: 8px; padding-top: 10px; }
+    .cs-total .cs-label { font-size: 15px; font-weight: 700; color: var(--text); }
+    .cs-total .cs-val { font-size: 18px; font-weight: 800; color: var(--green); }
+    .cs-discount { color: var(--red); }
+
+    /* Discount input */
+    .discount-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+    .discount-label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+    .discount-input {
+      flex: 1; height: 36px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font); font-weight: 600;
+      padding: 0 10px; outline: none; text-align: right;
+    }
+    .discount-input:focus { border-color: var(--accent); background: #fff; }
+    .discount-type {
+      height: 36px; padding: 0 8px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      font-size: 13px; font-family: var(--font); font-weight: 500;
+      outline: none; cursor: pointer;
+    }
+
+    /* Action buttons */
+    .cart-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .action-btn {
+      flex: 1; height: 50px;
+      border: none; border-radius: var(--radius-md);
+      font-size: 14px; font-family: var(--font); font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s;
+    }
+    .action-btn:active { opacity: 0.8; }
+    .action-btn.primary { background: var(--accent); color: #fff; }
+    .action-btn.success { background: var(--green); color: #fff; }
+    .action-btn.secondary { background: var(--bg); color: var(--text-secondary); border: 1.5px solid var(--border); }
+
+    /* ── ORDER INFO PANEL ── */
+    #orderinfo-panel { padding: 10px 10px calc(var(--safe-bottom) + 10px); }
+    .info-section {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .info-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 12px; }
+    .info-field { margin-bottom: 12px; }
+    .info-field:last-child { margin-bottom: 0; }
+    .info-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+    .info-input, .info-select, .info-textarea {
+      width: 100%; height: 42px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font);
+      padding: 0 12px; outline: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s;
+    }
+    .info-input:focus, .info-select:focus { border-color: var(--accent); background: #fff; }
+    .info-textarea {
+      height: auto; min-height: 80px;
+      padding: 10px 12px; resize: vertical;
+    }
+    .info-textarea:focus { border-color: var(--accent); background: #fff; }
+    .info-row { display: flex; gap: 10px; }
+    .info-row .info-field { flex: 1; }
+
+    /* Status tag select */
+    .status-select {
+      width: 100%; height: 42px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font); font-weight: 600;
+      padding: 0 12px; outline: none; cursor: pointer;
+    }
+    .status-select:focus { border-color: var(--accent); background: #fff; }
+
+    /* ── ORDERS LIST PANEL ── */
+    #orders-panel { padding: 10px 10px calc(var(--safe-bottom) + 10px); }
+    .orders-toolbar {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm); padding: 12px 14px;
+      margin-bottom: 10px; display: flex; gap: 8px; align-items: center;
+    }
+    .ot-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); flex: 1; }
+
+    .order-card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm); padding: 14px;
+      margin-bottom: 10px; cursor: pointer;
+      border: 2px solid transparent;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .order-card:active { transform: scale(0.985); }
+    .oc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .oc-id { font-size: 13px; font-weight: 700; color: var(--primary); }
+    .oc-date { font-size: 11px; color: var(--text-muted); }
+    .oc-client { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .oc-note { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .oc-footer { display: flex; justify-content: space-between; align-items: center; }
+    .oc-items { font-size: 12px; color: var(--text-secondary); }
+    .oc-total { font-size: 15px; font-weight: 700; color: var(--green); }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 9px; border-radius: 20px;
+    }
+    .s-pending { background: #fff3cd; color: #856404; }
+    .s-confirmed { background: var(--accent-light); color: var(--accent); }
+    .s-shipped { background: #d1fae5; color: #065f46; }
+    .s-delivered { background: var(--green-bg); color: var(--green); }
+    .s-cancelled { background: var(--red-bg); color: var(--red); }
+
+    .orders-empty { padding: 60px 24px; text-align: center; }
+    .orders-empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+    .orders-empty h3 { font-size: 17px; color: var(--text-secondary); font-weight: 600; margin-bottom: 8px; }
+    .orders-empty p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── MODAL ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0);
+      z-index: 200; display: none; transition: background 0.3s;
+    }
+    #modal-overlay.open { background: rgba(0,0,0,0.5); display: block; }
+    #modal {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      max-height: 92vh; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      z-index: 201;
       transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
-      z-index: 1001;
-      padding-bottom: 24px;
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      padding-bottom: calc(var(--safe-bottom) + 20px);
+      box-shadow: var(--shadow-lg);
     }
-    .detail-sheet.open { transform: translateY(0); }
-    .sheet-handle {
-      width: 40px;
-      height: 5px;
-      background: #cbd5e1;
-      border-radius: 4px;
-      margin: 12px auto;
+    #modal.open { transform: translateY(0); }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 6px; }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px 14px; border-bottom: 1px solid var(--border);
     }
-    .toast-msg {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #0f172a;
-      color: white;
-      padding: 8px 22px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      z-index: 1100;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
+    .modal-title { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; padding-right: 12px; }
+    .modal-close-btn {
+      width: 36px; height: 36px; border: none; background: var(--bg);
+      border-radius: 50%; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary); flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-    .btn-primary {
-      background: #0f172a;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 34px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
+    .modal-body { padding: 16px 18px; }
+
+    /* Qty modal */
+    .qty-modal-wrap { display: flex; flex-direction: column; gap: 16px; }
+    .qm-product { display: flex; gap: 12px; align-items: center; background: var(--bg); border-radius: var(--radius-md); padding: 12px; }
+    .qm-img-wrap {
+      flex-shrink: 0; width: 56px; height: 56px;
+      border-radius: 12px; background: var(--surface);
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
     }
-    .btn-danger { background: #dc2626; }
-    .btn-outline { background: #f1f5f9; color: #1e293b; }
-    .flex-between {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+    .qm-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .qm-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .qm-fields { display: flex; flex-direction: column; gap: 10px; }
+    .qm-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+    .qm-qty-row { display: flex; gap: 8px; align-items: center; }
+    .qm-input {
+      flex: 1; height: 46px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 18px; font-weight: 700; font-family: var(--font);
+      padding: 0 12px; text-align: center; outline: none;
+    }
+    .qm-input:focus { border-color: var(--accent); background: #fff; }
+    .qm-big-btn {
+      width: 46px; height: 46px;
+      border: none; border-radius: var(--radius-sm);
+      background: var(--accent); color: #fff;
+      font-size: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .qm-big-btn:active { opacity: 0.8; }
+    .qm-big-btn.minus { background: var(--bg); color: var(--accent); border: 1.5px solid var(--border); }
+    .qm-price-select {
+      width: 100%; height: 46px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font); font-weight: 500;
+      padding: 0 12px; outline: none; cursor: pointer;
+    }
+    .qm-price-select:focus { border-color: var(--accent); background: #fff; }
+    .qm-unit-input {
+      width: 100%; height: 42px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font);
+      padding: 0 12px; outline: none;
+    }
+    .qm-unit-input:focus { border-color: var(--accent); background: #fff; }
+    .qm-note {
+      width: 100%; min-height: 64px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-size: 14px; font-family: var(--font);
+      padding: 10px 12px; outline: none; resize: vertical;
+    }
+    .qm-note:focus { border-color: var(--accent); background: #fff; }
+    .qm-note::placeholder { color: var(--text-muted); }
+    .qm-preview {
+      background: var(--accent-light); border-radius: var(--radius-md);
+      padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .qm-preview-label { font-size: 13px; color: var(--accent); font-weight: 500; }
+    .qm-preview-total { font-size: 17px; font-weight: 800; color: var(--accent); }
+    .qm-add-btn {
+      width: 100%; height: 52px;
+      border: none; border-radius: var(--radius-md);
+      background: var(--accent); color: #fff;
+      font-size: 16px; font-family: var(--font); font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s;
+    }
+    .qm-add-btn:active { opacity: 0.8; }
+
+    /* Order detail modal */
+    .od-header-info { background: var(--bg); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; }
+    .od-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); }
+    .od-row:last-child { border-bottom: none; }
+    .od-key { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .od-val { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; flex: 1; padding-left: 12px; }
+    .od-items-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .od-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .od-item:last-child { border-bottom: none; }
+    .od-item-img {
+      flex-shrink: 0; width: 44px; height: 44px;
+      border-radius: 10px; background: var(--bg);
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .od-item-img img { width: 100%; height: 100%; object-fit: contain; }
+    .od-item-info { flex: 1; min-width: 0; }
+    .od-item-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 3px; }
+    .od-item-meta { font-size: 11px; color: var(--text-muted); }
+    .od-item-note { font-size: 11px; color: var(--accent); margin-top: 3px; font-style: italic; }
+    .od-item-price { font-size: 13px; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .od-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .od-action-btn {
+      flex: 1; min-width: 120px; height: 46px;
+      border: none; border-radius: var(--radius-md);
+      font-size: 13px; font-family: var(--font); font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .od-action-btn.print { background: var(--accent); color: #fff; }
+    .od-action-btn.xlsx { background: var(--green); color: #fff; }
+    .od-action-btn.whatsapp { background: var(--whatsapp); color: #fff; }
+    .od-action-btn.delete { background: var(--red-bg); color: var(--red); border: 1.5px solid var(--red); }
+    .od-action-btn.restore { background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body { overflow: visible !important; height: auto !important; }
+      #app { height: auto !important; overflow: visible !important; }
+      #header, #tabs, .search-bar, .filter-strip, #toast, #modal-overlay { display: none !important; }
+      #tab-content { overflow: visible !important; }
+      .tab-panel { display: block !important; overflow: visible !important; }
+      #cart-panel, #orders-panel, #catalog-panel, #orderinfo-panel { display: none !important; }
+      #print-area { display: block !important; }
+    }
+    #print-area { display: none; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: calc(var(--safe-bottom) + 16px); left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary); color: #fff;
+      padding: 10px 20px; border-radius: 30px;
+      font-size: 13.5px; font-weight: 500;
+      z-index: 500; opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap; pointer-events: none;
+      box-shadow: var(--shadow-md);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* Fullscreen image */
+    #fs-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+      z-index: 400; display: none; align-items: center; justify-content: center;
+    }
+    #fs-overlay.open { display: flex; }
+    #fs-img { max-width: 100%; max-height: 100vh; object-fit: contain; }
+    #fs-close {
+      position: fixed; top: max(16px, env(safe-area-inset-top)); right: 16px;
+      width: 44px; height: 44px; background: rgba(255,255,255,0.12);
+      border: none; border-radius: 50%; color: #fff; font-size: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
   </style>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-
-<div class="header">
-  <div class="logo-area"><h2>📋 SİFARİŞ PRO</h2></div>
-  <a href="index.html" class="back-home">← Ana Səhifə</a>
-</div>
-
-<div class="main-container">
-  <!-- Sifarişlər siyahısı (kartlar) -->
-  <div class="orders-strip">
-    <div class="section-title"><span>📌 Son sifarişlər</span> <button id="newOrderBtn" class="btn-outline" style="padding: 5px 12px; border-radius: 40px;">+ Yeni</button></div>
-    <div class="orders-scroll" id="ordersScrollList"></div>
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <a href="index.html" id="back-btn" title="Anbara qayıt">◀</a>
+    <div id="header-title">
+      <h1>🧾 Sifarişlər</h1>
+      <div id="header-sub">Yükləniр...</div>
+    </div>
+    <button id="new-order-btn">➕ Yeni sifariş</button>
   </div>
 
-  <!-- Əsas redaktor paneli -->
-  <div class="editor-card">
-    <div class="flex-row">
-      <div class="input-group"><label>👤 Müştəri adı</label><input type="text" id="custName" placeholder="Ad Soyad / Şirkət"></div>
-      <div class="input-group"><label>📞 Telefon</label><input type="tel" id="custPhone" placeholder="+994 00 000 00 00"></div>
-      <div class="input-group"><label>📅 Tarix</label><input type="date" id="orderDate"></div>
-    </div>
-    <div class="input-group"><label>📝 Ümumi qeyd</label><textarea id="orderGeneralNote" rows="2" placeholder="Sifariş üzrə qeyd..."></textarea></div>
-
-    <div class="items-table-wrapper">
-      <table class="order-table" id="orderItemsTable">
-        <thead><tr><th>Məhsul</th><th>Say</th><th>Qeyd (məhsul)</th><th>Qiymət</th><th>Cəmi</th><th></th></tr></thead>
-        <tbody id="orderItemsTbody"></tbody>
-      </table>
-    </div>
-    <div class="total-summary" id="dynamicTotal">Cəmi: 0.00 ₼</div>
-    <div class="flex-between" style="margin-top: 16px;">
-      <button id="saveOrderBtn" class="btn-primary">💾 Sifarişi yadda saxla</button>
-      <button id="deleteOrderBtn" class="btn-primary btn-danger" style="background:#b91c1c;">🗑 Sifarişi sil</button>
-      <button id="exportOrderExcelBtn" class="btn-primary" style="background:#2c3e50;">📎 Excel ixrac</button>
-    </div>
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" data-tab="catalog">
+      <span class="tab-icon">🔍</span>
+      <span>Kataloq</span>
+    </button>
+    <button class="tab-btn" data-tab="cart">
+      <span class="tab-icon">🛒</span>
+      <span>Səbət <span class="tab-badge" id="cart-badge"></span></span>
+    </button>
+    <button class="tab-btn" data-tab="orderinfo">
+      <span class="tab-icon">📋</span>
+      <span>Məlumat</span>
+    </button>
+    <button class="tab-btn" data-tab="orders">
+      <span class="tab-icon">📁</span>
+      <span>Sifarişlər <span class="tab-badge" id="orders-badge"></span></span>
+    </button>
   </div>
 
-  <!-- Məhsul seçmə paneli (filter + grid) -->
-  <div class="product-palette">
-    <div style="font-weight: 700; margin-bottom: 12px;">➕ Məhsul əlavə et</div>
-    <div class="filter-group">
-      <input type="text" id="prodNameSearch" class="search-mini" placeholder="🔍 Məhsul adı">
-      <input type="text" id="prodCodeSearch" class="search-mini" placeholder="🏷️ Barkod / Artikul">
+  <!-- TAB CONTENT -->
+  <div id="tab-content">
+
+    <!-- ── CATALOG TAB ── -->
+    <div class="tab-panel active" id="catalog-tab">
+      <!-- Search -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="si">🔍</span>
+          <input class="search-input" id="cat-search-name" type="search" placeholder="Məhsul adı axtar..." autocomplete="off">
+        </div>
+        <div class="search-input-wrap">
+          <span class="si">🔖</span>
+          <input class="search-input" id="cat-search-code" type="search" placeholder="Barkod / Artikul..." autocomplete="off">
+        </div>
+      </div>
+      <!-- Filter strip -->
+      <div class="filter-strip">
+        <div class="seg-control" id="wh-seg">
+          <button class="seg-btn active" data-wh="qarayev">Qarayev</button>
+          <button class="seg-btn" data-wh="razin">Razin</button>
+          <button class="seg-btn" data-wh="esas">Əsas</button>
+        </div>
+        <div class="seg-control" id="price-seg">
+          <button class="seg-btn active" data-price="perakendeQiymeti">Pərakəndə</button>
+          <button class="seg-btn" data-price="topdanQiymeti">Topdan</button>
+          <button class="seg-btn" data-price="alishQiymeti">Alış</button>
+        </div>
+        <div class="seg-control" id="loc-seg">
+          <button class="seg-btn active" data-loc="">Hamısı</button>
+          <button class="seg-btn" data-loc="asagi">Aşağı</button>
+          <button class="seg-btn" data-loc="yuxari">Yuxarı</button>
+        </div>
+        <div class="seg-control" id="stock-seg">
+          <button class="seg-btn active" data-stock="all">Bütün stok</button>
+          <button class="seg-btn" data-stock="instock">Stokda var</button>
+          <button class="seg-btn" data-stock="out">Stok yox</button>
+        </div>
+        <div class="seg-control" id="sort-seg">
+          <button class="seg-btn active" data-sort="name">Ada görə</button>
+          <button class="seg-btn" data-sort="price">Qiymətə</button>
+          <button class="seg-btn" data-sort="stock">Stoka</button>
+        </div>
+      </div>
+      <!-- List -->
+      <div id="catalog-panel">
+        <div class="empty-state" id="cat-empty">
+          <div class="es-icon">📦</div>
+          <h3>Məhsul tapılmadı</h3>
+          <p>Anbar sehifesinden Excel idxal edin, sonra bura qayıdın.</p>
+        </div>
+        <div class="catalog-grid" id="catalog-list"></div>
+        <div id="catalog-loading">Daha çox yüklənir…</div>
+        <div id="catalog-sentinel"></div>
+      </div>
     </div>
-    <div class="chip-group" id="warehouseChips">
-      <button class="chip active" data-wh="qarayev">Qarayev anbarı</button>
-      <button class="chip" data-wh="razin">Razin anbarı</button>
-      <button class="chip" data-wh="esas">Əsas anbar</button>
+
+    <!-- ── CART TAB ── -->
+    <div class="tab-panel" id="cart-tab">
+      <div id="cart-panel">
+        <div class="cart-empty" id="cart-empty">
+          <div class="es-icon">🛒</div>
+          <h3>Səbət boşdur</h3>
+          <p>Kataloqdan məhsullar seçin.</p>
+        </div>
+
+        <div id="cart-content" style="display:none">
+          <div class="cart-toolbar">
+            <span class="ct-label" id="ct-count-label">0 maddə</span>
+            <button class="ct-btn" id="sort-cart-btn">↕ Sırala</button>
+            <button class="ct-btn danger" id="clear-cart-btn">🗑 Hamısını sil</button>
+          </div>
+          <div id="cart-items"></div>
+
+          <!-- Summary -->
+          <div class="cart-summary">
+            <div class="cs-title">📊 Cəmi hesabat</div>
+            <div class="cs-row">
+              <span class="cs-label">Maddə sayı</span>
+              <span class="cs-val" id="sum-items">0</span>
+            </div>
+            <div class="cs-row">
+              <span class="cs-label">Ümumi miqdar</span>
+              <span class="cs-val" id="sum-qty">0</span>
+            </div>
+            <div class="cs-row">
+              <span class="cs-label">Mal dəyəri</span>
+              <span class="cs-val" id="sum-subtotal">0,00 ₼</span>
+            </div>
+            <!-- Discount -->
+            <div class="discount-row">
+              <span class="discount-label">Endirim:</span>
+              <input class="discount-input" id="discount-val" type="number" min="0" placeholder="0" value="0">
+              <select class="discount-type" id="discount-type">
+                <option value="flat">₼</option>
+                <option value="pct">%</option>
+              </select>
+            </div>
+            <div class="cs-row cs-discount" id="discount-row" style="display:none">
+              <span class="cs-label">Endirim məbləği</span>
+              <span class="cs-val cs-discount" id="sum-discount">-0,00 ₼</span>
+            </div>
+            <div class="cs-row cs-total">
+              <span class="cs-label">CƏMİ MƏBLƏĞ</span>
+              <span class="cs-val" id="sum-total">0,00 ₼</span>
+            </div>
+          </div>
+
+          <div class="cart-actions">
+            <button class="action-btn secondary" id="save-draft-btn">💾 Qaralama</button>
+            <button class="action-btn success" id="confirm-order-btn">✅ Sifarişi təsdiqlə</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="chip-group" id="priceTypeChips">
-      <button class="chip active" data-pt="perakendeQiymeti">Pərakəndə</button>
-      <button class="chip" data-pt="topdanQiymeti">Topdan</button>
-      <button class="chip" data-pt="alishQiymeti">Alış</button>
+
+    <!-- ── ORDER INFO TAB ── -->
+    <div class="tab-panel" id="orderinfo-tab">
+      <div id="orderinfo-panel">
+        <div class="info-section">
+          <div class="info-section-title">👤 Müştəri məlumatları</div>
+          <div class="info-field">
+            <label class="info-label">Müştəri adı *</label>
+            <input class="info-input" id="client-name" type="text" placeholder="Ad Soyad / Şirkət adı" autocomplete="off">
+          </div>
+          <div class="info-row">
+            <div class="info-field">
+              <label class="info-label">Telefon</label>
+              <input class="info-input" id="client-phone" type="tel" placeholder="+994 xx xxx xx xx" autocomplete="off">
+            </div>
+            <div class="info-field">
+              <label class="info-label">E-poçt</label>
+              <input class="info-input" id="client-email" type="email" placeholder="email@example.com" autocomplete="off">
+            </div>
+          </div>
+          <div class="info-field">
+            <label class="info-label">Ünvan</label>
+            <input class="info-input" id="client-address" type="text" placeholder="Çatdırılma ünvanı" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-section-title">📦 Sifariş detalları</div>
+          <div class="info-row">
+            <div class="info-field">
+              <label class="info-label">Sifariş tarixi</label>
+              <input class="info-input" id="order-date" type="date">
+            </div>
+            <div class="info-field">
+              <label class="info-label">Çatdırılma tarixi</label>
+              <input class="info-input" id="delivery-date" type="date">
+            </div>
+          </div>
+          <div class="info-field">
+            <label class="info-label">Status</label>
+            <select class="status-select" id="order-status">
+              <option value="pending">⏳ Gözləmədə</option>
+              <option value="confirmed">✅ Təsdiqləndi</option>
+              <option value="shipped">🚚 Göndərildi</option>
+              <option value="delivered">📬 Çatdırıldı</option>
+              <option value="cancelled">❌ Ləğv edildi</option>
+            </select>
+          </div>
+          <div class="info-row">
+            <div class="info-field">
+              <label class="info-label">Ödəniş növü</label>
+              <select class="info-select" id="payment-type">
+                <option value="">Seçin...</option>
+                <option value="cash">💵 Nağd</option>
+                <option value="card">💳 Kart</option>
+                <option value="transfer">🏦 Bank köçürməsi</option>
+                <option value="credit">📅 Kredit</option>
+                <option value="other">Digər</option>
+              </select>
+            </div>
+            <div class="info-field">
+              <label class="info-label">Ödəniş statusu</label>
+              <select class="info-select" id="payment-status">
+                <option value="unpaid">❌ Ödənilməyib</option>
+                <option value="partial">🔄 Qismən ödənildi</option>
+                <option value="paid">✅ Ödənildi</option>
+              </select>
+            </div>
+          </div>
+          <div class="info-field">
+            <label class="info-label">Sifariş nömrəsi (avtomatik)</label>
+            <input class="info-input" id="order-number" type="text" placeholder="Avtomatik təyin ediləcək" readonly style="color:var(--text-muted); background: var(--bg);">
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-section-title">📝 Qeyd</div>
+          <div class="info-field">
+            <textarea class="info-textarea" id="order-note" placeholder="Sifariş üçün əlavə qeydlər..."></textarea>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="chip-group" id="locationChips">
-      <button class="chip active" data-loc="">Bütün yerlər</button>
-      <button class="chip" data-loc="asagi">Aşağı yer</button>
-      <button class="chip" data-loc="yuxari">Yuxarı yer</button>
+
+    <!-- ── ORDERS LIST TAB ── -->
+    <div class="tab-panel" id="orders-tab">
+      <!-- Search & filter for orders -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="si">🔍</span>
+          <input class="search-input" id="orders-search" type="search" placeholder="Müştəri adı, sifariş nömrəsi..." autocomplete="off">
+        </div>
+      </div>
+      <div class="filter-strip">
+        <div class="seg-control" id="orders-status-seg">
+          <button class="seg-btn active" data-status="all">Hamısı</button>
+          <button class="seg-btn" data-status="pending">Gözləmədə</button>
+          <button class="seg-btn" data-status="confirmed">Təsdiqləndi</button>
+          <button class="seg-btn" data-status="shipped">Göndərildi</button>
+          <button class="seg-btn" data-status="delivered">Çatdırıldı</button>
+          <button class="seg-btn" data-status="cancelled">Ləğv</button>
+        </div>
+      </div>
+      <div id="orders-panel">
+        <div class="orders-toolbar">
+          <span class="ot-label" id="orders-count-label">0 sifariş</span>
+          <button class="ct-btn" id="export-orders-btn">📊 Excel</button>
+          <button class="ct-btn danger" id="clear-all-orders-btn">🗑 Hamısını sil</button>
+        </div>
+        <div class="orders-empty" id="orders-empty" style="display:none">
+          <div class="orders-empty-icon">📁</div>
+          <h3>Sifariş yoxdur</h3>
+          <p>Yeni sifariş yaradaraq başlayın.</p>
+        </div>
+        <div id="orders-list"></div>
+      </div>
     </div>
-    <div class="flex-between" style="margin: 8px 0 12px;">
-      <label style="font-size:0.8rem;"><input type="checkbox" id="onlyImgCheck"> Yalnız şəkilli məhsullar</label>
-      <select id="sortSelect" style="padding: 5px 10px; border-radius: 40px;"><option value="name">Ad (A-Z)</option><option value="price">Qiymət (artan)</option><option value="stock">Stok (artan)</option></select>
-    </div>
-    <div class="products-grid" id="productsGridArea">Yüklənir...</div>
+
+  </div><!-- end tab-content -->
+</div><!-- end app -->
+
+<!-- PRINT AREA -->
+<div id="print-area"></div>
+
+<!-- MODAL -->
+<div id="modal-overlay"></div>
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="modal-handle"></div>
+  <div class="modal-header">
+    <div class="modal-title" id="modal-title">Modal</div>
+    <button class="modal-close-btn" id="modal-close">✕</button>
   </div>
+  <div class="modal-body" id="modal-body"></div>
 </div>
 
-<!-- Modal detalları -->
-<div id="detailModalMask" class="modal-mask"></div>
-<div id="detailModalSheet" class="detail-sheet">
-  <div class="sheet-handle"></div>
-  <div style="padding: 8px 18px 20px;" id="modalProductContent"></div>
+<!-- Fullscreen image -->
+<div id="fs-overlay">
+  <img id="fs-img" src="" alt="">
+  <button id="fs-close">✕</button>
 </div>
-<div id="globalToast" class="toast-msg"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- XLSX -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js" onerror="window._xlsxFailed=true"></script>
 
 <script>
-  (function(){
-    // ---------- STATE ----------
-    let productsMaster = [];           // bütün məhsullar (anbardan)
-    let imagesMap = {};               // artikul -> blob url
-    let ordersList = [];              // bütün sifarişlər
-    let activeOrderId = null;         // hazırda açıq sifariş ID
-    let currentOrderItems = [];       // [{artikul, productName, quantity, price, note}]
-    
-    // filter state for product selector
-    let prodFilter = {
-      warehouse: 'qarayev',
-      priceType: 'perakendeQiymeti',
-      location: '',
-      onlyImg: false,
-      sortBy: 'name',
-      searchName: '',
-      searchCode: ''
+'use strict';
+
+// ─── INDEXEDDB (shared with index.html) ───
+const DB_NAME = 'AnbarDB';
+const DB_VERSION = 1;
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('products')) d.createObjectStore('products', { keyPath: 'artikul' });
+      if (!d.objectStoreNames.contains('images'))   d.createObjectStore('images', { keyPath: 'artikul' });
     };
-    
-    // DOM elements
-    const ordersContainer = document.getElementById('ordersScrollList');
-    const custNameInp = document.getElementById('custName');
-    const custPhoneInp = document.getElementById('custPhone');
-    const orderDateInp = document.getElementById('orderDate');
-    const generalNote = document.getElementById('orderGeneralNote');
-    const orderTbody = document.getElementById('orderItemsTbody');
-    const dynamicTotalSpan = document.getElementById('dynamicTotal');
-    const saveBtn = document.getElementById('saveOrderBtn');
-    const deleteBtn = document.getElementById('deleteOrderBtn');
-    const newBtn = document.getElementById('newOrderBtn');
-    const exportExcelBtn = document.getElementById('exportOrderExcelBtn');
-    
-    // ------ helper functions ------
-    function toast(msg, duration = 2000) {
-      const t = document.getElementById('globalToast');
-      t.innerText = msg;
-      t.style.opacity = '1';
-      setTimeout(() => t.style.opacity = '0', duration);
+    req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    if (!db) { resolve([]); return; }
+    try {
+      const tx = db.transaction(store, 'readonly');
+      const req = tx.objectStore(store).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    } catch(e) { reject(e); }
+  });
+}
+
+// ─── STATE ───
+let allProducts  = [];
+let imageMap     = {};  // artikul(lower) → objectURL
+let filteredProds = [];
+let displayLimit = 50;
+const PAGE_SIZE  = 50;
+
+let cart = []; // [{product, qty, priceType, unit, note}]
+let orders = []; // saved orders
+let currentOrderId = null; // editing existing order
+
+let catFilters = {
+  warehouse: 'qarayev',
+  priceType: 'perakendeQiymeti',
+  loc: '',
+  stock: 'all',
+  sort: 'name',
+};
+let catSearchName = '';
+let catSearchCode = '';
+let ordersStatusFilter = 'all';
+let ordersSearchQ = '';
+let cartSortMode = 'added'; // 'added' | 'name' | 'price'
+
+// ─── UTILS ───
+function numFmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '0,00 ₼';
+  if (typeof n !== 'number') n = parseFloat(n);
+  if (isNaN(n)) return '0,00 ₼';
+  return n.toFixed(2).replace('.', ',') + ' ₼';
+}
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, dur = 2400) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+function genOrderNumber() {
+  return 'SIF-' + Date.now().toString(36).toUpperCase().slice(-6);
+}
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+function fmtDate(str) {
+  if (!str) return '—';
+  const [y,m,d] = str.split('-');
+  return `${d}.${m}.${y}`;
+}
+function statusLabel(s) {
+  const map = { pending:'⏳ Gözləmədə', confirmed:'✅ Təsdiqləndi', shipped:'🚚 Göndərildi', delivered:'📬 Çatdırıldı', cancelled:'❌ Ləğv' };
+  return map[s] || s;
+}
+function statusClass(s) {
+  const map = { pending:'s-pending', confirmed:'s-confirmed', shipped:'s-shipped', delivered:'s-delivered', cancelled:'s-cancelled' };
+  return map[s] || '';
+}
+function priceLabel(pt) {
+  const map = { perakendeQiymeti:'Pərakəndə', topdanQiymeti:'Topdan', alishQiymeti:'Alış' };
+  return map[pt] || pt;
+}
+
+// ─── LOCAL STORAGE FOR ORDERS & CART ───
+function saveOrdersLS() {
+  try { localStorage.setItem('anbar_orders', JSON.stringify(orders)); } catch(e) {}
+}
+function loadOrdersLS() {
+  try { const d = localStorage.getItem('anbar_orders'); if (d) orders = JSON.parse(d); } catch(e) {}
+}
+function saveCartLS() {
+  try {
+    const lean = cart.map(i => ({ artikul: i.product.artikul, qty: i.qty, priceType: i.priceType, unit: i.unit, note: i.note }));
+    localStorage.setItem('anbar_cart', JSON.stringify(lean));
+  } catch(e) {}
+}
+function loadCartLS() {
+  try {
+    const d = localStorage.getItem('anbar_cart');
+    if (d && allProducts.length) {
+      const lean = JSON.parse(d);
+      cart = lean.map(l => {
+        const p = allProducts.find(x => x.artikul === l.artikul);
+        if (!p) return null;
+        return { product: p, qty: l.qty || 1, priceType: l.priceType || 'perakendeQiymeti', unit: l.unit || 'əd.', note: l.note || '' };
+      }).filter(Boolean);
     }
-    
-    function escapeHtml(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    
-    // ------ IndexedDB (AnbarDB) yükləmə ------
-    async function loadWarehouseData() {
-      return new Promise((resolve) => {
-        const req = indexedDB.open('AnbarDB', 1);
-        req.onsuccess = async (e) => {
-          const db = e.target.result;
-          const tx = db.transaction('products', 'readonly');
-          const prodReq = tx.objectStore('products').getAll();
-          prodReq.onsuccess = () => {
-            productsMaster = prodReq.result || [];
-            // load images
-            const imgTx = db.transaction('images', 'readonly');
-            const imgReq = imgTx.objectStore('images').getAll();
-            imgReq.onsuccess = () => {
-              const images = imgReq.result || [];
-              Object.values(imagesMap).forEach(u => URL.revokeObjectURL(u));
-              imagesMap = {};
-              for (let img of images) {
-                try { imagesMap[img.artikul.toLowerCase()] = URL.createObjectURL(img.blob); } catch(e) {}
-              }
-              resolve();
-            };
-            imgReq.onerror = () => resolve();
-          };
-          prodReq.onerror = () => resolve();
-        };
-        req.onerror = () => { productsMaster = []; resolve(); };
-      });
+  } catch(e) {}
+}
+function saveOrderInfoLS() {
+  try {
+    const info = {
+      clientName: document.getElementById('client-name').value,
+      clientPhone: document.getElementById('client-phone').value,
+      clientEmail: document.getElementById('client-email').value,
+      clientAddress: document.getElementById('client-address').value,
+      orderDate: document.getElementById('order-date').value,
+      deliveryDate: document.getElementById('delivery-date').value,
+      orderStatus: document.getElementById('order-status').value,
+      paymentType: document.getElementById('payment-type').value,
+      paymentStatus: document.getElementById('payment-status').value,
+      orderNote: document.getElementById('order-note').value,
+      discountVal: document.getElementById('discount-val').value,
+      discountType: document.getElementById('discount-type').value,
+    };
+    localStorage.setItem('anbar_orderinfo', JSON.stringify(info));
+  } catch(e) {}
+}
+function loadOrderInfoLS() {
+  try {
+    const d = localStorage.getItem('anbar_orderinfo');
+    if (d) {
+      const info = JSON.parse(d);
+      if (info.clientName)    document.getElementById('client-name').value = info.clientName;
+      if (info.clientPhone)   document.getElementById('client-phone').value = info.clientPhone;
+      if (info.clientEmail)   document.getElementById('client-email').value = info.clientEmail;
+      if (info.clientAddress) document.getElementById('client-address').value = info.clientAddress;
+      if (info.orderDate)     document.getElementById('order-date').value = info.orderDate;
+      if (info.deliveryDate)  document.getElementById('delivery-date').value = info.deliveryDate;
+      if (info.orderStatus)   document.getElementById('order-status').value = info.orderStatus;
+      if (info.paymentType)   document.getElementById('payment-type').value = info.paymentType;
+      if (info.paymentStatus) document.getElementById('payment-status').value = info.paymentStatus;
+      if (info.orderNote)     document.getElementById('order-note').value = info.orderNote;
+      if (info.discountVal)   document.getElementById('discount-val').value = info.discountVal;
+      if (info.discountType)  document.getElementById('discount-type').value = info.discountType;
     }
-    
-    // Sifarişlər DB (ayrı)
-    let ordersDB = null;
-    function openOrdersDB() {
-      return new Promise((resolve) => {
-        const request = indexedDB.open('AnbarOrdersProDB', 1);
-        request.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains('orders')) db.createObjectStore('orders', { keyPath: 'id' });
-        };
-        request.onsuccess = (e) => { ordersDB = e.target.result; resolve(); };
-        request.onerror = () => resolve();
-      });
-    }
-    
-    async function loadAllOrders() {
-      if (!ordersDB) await openOrdersDB();
-      return new Promise((resolve) => {
-        const tx = ordersDB.transaction('orders', 'readonly');
-        const req = tx.objectStore('orders').getAll();
-        req.onsuccess = () => {
-          ordersList = req.result || [];
-          ordersList.sort((a,b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
-          renderOrdersList();
-          resolve();
-        };
-        req.onerror = () => resolve();
-      });
-    }
-    
-    function persistOrder(order) {
-      return new Promise((resolve) => {
-        const tx = ordersDB.transaction('orders', 'readwrite');
-        tx.objectStore('orders').put(order);
-        tx.oncomplete = () => { resolve(); loadAllOrders(); };
-      });
-    }
-    
-    function deleteOrderDB(id) {
-      return new Promise((resolve) => {
-        const tx = ordersDB.transaction('orders', 'readwrite');
-        tx.objectStore('orders').delete(id);
-        tx.oncomplete = () => { resolve(); loadAllOrders(); if(activeOrderId === id) clearEditor(); };
-      });
-    }
-    
-    // UI: sifariş kartları
-    function renderOrdersList() {
-      if (!ordersList.length) { ordersContainer.innerHTML = '<div style="background:#eef2ff; padding:8px 16px; border-radius:40px;">➕ Yeni sifariş yaradın</div>'; return; }
-      ordersContainer.innerHTML = ordersList.map(order => `
-        <div class="order-chip ${activeOrderId === order.id ? 'active' : ''}" data-id="${order.id}">
-          <h4>${escapeHtml(order.customerName || 'Adsız')} <span class="total-badge">${(order.total || 0).toFixed(2)}₼</span></h4>
-          <p>📞 ${order.customerPhone || '—'} &nbsp; 📅 ${order.date || ''}</p>
-          <p>📦 ${order.items?.reduce((s,i)=>s+i.quantity,0)} ədəd</p>
+  } catch(e) {}
+}
+function clearOrderInfoLS() {
+  try { localStorage.removeItem('anbar_orderinfo'); } catch(e) {}
+}
+function clearCartLS() {
+  try { localStorage.removeItem('anbar_cart'); } catch(e) {}
+}
+
+// ─── HEADER SUB TEXT ───
+function updateHeaderSub() {
+  const el = document.getElementById('header-sub');
+  el.textContent = allProducts.length
+    ? `${allProducts.length} məhsul · ${cart.length} səbətdə · ${orders.length} sifariş`
+    : 'Anbardan məhsullar yükləyin';
+}
+
+// ─── TABS ───
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn || !btn.dataset.tab) return;
+  switchTab(btn.dataset.tab);
+});
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tabId + '-tab').classList.add('active');
+}
+
+// ─── CATALOG FILTER SEGMENTS ───
+document.getElementById('wh-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#wh-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  catFilters.warehouse = btn.dataset.wh;
+  applyFilters();
+});
+document.getElementById('price-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#price-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  catFilters.priceType = btn.dataset.price;
+  applyFilters();
+});
+document.getElementById('loc-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#loc-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  catFilters.loc = btn.dataset.loc;
+  applyFilters();
+});
+document.getElementById('stock-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#stock-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  catFilters.stock = btn.dataset.stock;
+  applyFilters();
+});
+document.getElementById('sort-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#sort-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  catFilters.sort = btn.dataset.sort;
+  applyFilters();
+});
+document.getElementById('cat-search-name').addEventListener('input', debounce(e => {
+  catSearchName = e.target.value; applyFilters();
+}, 280));
+document.getElementById('cat-search-code').addEventListener('input', debounce(e => {
+  catSearchCode = e.target.value; applyFilters();
+}, 280));
+
+// ─── APPLY FILTERS ───
+function applyFilters() {
+  const wh = catFilters.warehouse;
+  const pt = catFilters.priceType;
+  const loc = catFilters.loc;
+  const stockF = catFilters.stock;
+  const sortF = catFilters.sort;
+  const nameW = catSearchName.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const codeQ = catSearchCode.trim().toLowerCase();
+
+  let res = allProducts.filter(p => {
+    if (nameW.length) { const n = p.ad.toLowerCase(); if (!nameW.every(w => n.includes(w))) return false; }
+    if (codeQ) { if (!p.barkod.toLowerCase().includes(codeQ) && !p.artikul.toLowerCase().includes(codeQ)) return false; }
+    if (loc === 'asagi') { if (!p.saxlamaYeri.toLowerCase().includes('aşağı') && !p.saxlamaYeri.toLowerCase().includes('asagi')) return false; }
+    if (loc === 'yuxari') { if (!p.saxlamaYeri.toLowerCase().includes('yuxarı') && !p.saxlamaYeri.toLowerCase().includes('yuxari')) return false; }
+    const stock = p[wh] || 0;
+    if (stockF === 'instock' && stock <= 0) return false;
+    if (stockF === 'out' && stock > 0) return false;
+    return true;
+  });
+
+  res.sort((a, b) => {
+    if (sortF === 'name') return a.ad.toLowerCase().localeCompare(b.ad.toLowerCase());
+    if (sortF === 'price') return (b[pt]||0) - (a[pt]||0);
+    if (sortF === 'stock') return (b[wh]||0) - (a[wh]||0);
+    return 0;
+  });
+
+  filteredProds = res;
+  displayLimit = PAGE_SIZE;
+  renderCatalog();
+}
+
+// ─── RENDER CATALOG ───
+function renderCatalog() {
+  const list = document.getElementById('catalog-list');
+  const empty = document.getElementById('cat-empty');
+  const loading = document.getElementById('catalog-loading');
+
+  const wh = catFilters.warehouse;
+  const pt = catFilters.priceType;
+  const slice = filteredProds.slice(0, displayLimit);
+
+  if (!slice.length) {
+    list.innerHTML = '';
+    empty.classList.add('show');
+    return;
+  }
+  empty.classList.remove('show');
+
+  const inCartSet = new Set(cart.map(i => i.product.artikul));
+  const frag = document.createDocumentFragment();
+  slice.forEach(p => frag.appendChild(createCatalogCard(p, wh, pt, inCartSet)));
+  list.innerHTML = '';
+  list.appendChild(frag);
+  loading.style.display = displayLimit < filteredProds.length ? 'block' : 'none';
+}
+
+function createCatalogCard(p, wh, pt, inCartSet) {
+  const div = document.createElement('div');
+  const inCart = inCartSet.has(p.artikul);
+  div.className = 'product-card' + (inCart ? ' in-cart' : '');
+  const imgKey = p.artikul.toLowerCase();
+  const imgSrc = imageMap[imgKey];
+  const stock = p[wh] || 0;
+  const price = p[pt] || 0;
+  const cartItem = cart.find(i => i.product.artikul === p.artikul);
+  div.innerHTML = `
+    <div class="card-img-wrap">
+      ${imgSrc ? `<img class="card-img" src="${imgSrc}" alt="${esc(p.ad)}" loading="lazy">` : `<span class="card-img-placeholder">📦</span>`}
+    </div>
+    <div class="card-info">
+      <div class="card-name">${esc(p.ad) || '(adsız)'}</div>
+      <div class="card-meta">${esc(p.barkod)||'—'} · ${esc(p.artikul)||'—'}</div>
+      <div class="card-meta">${esc(p.tedarikci)||''}</div>
+    </div>
+    <div class="card-right">
+      <div class="price-tag">${price ? numFmt(price) : '— ₼'}</div>
+      <div class="stock-badge${stock===0?' zero':''}">${stock} əd.</div>
+      <button class="add-btn${inCart?' added':''}" data-artikul="${esc(p.artikul)}" title="${inCart?'Sayı dəyiş':'Səbətə əlavə et'}">${inCart ? cartItem.qty : '+'}</button>
+    </div>
+    ${inCart ? `<div class="in-cart-badge">✓ ${cartItem.qty}</div>` : ''}
+  `;
+  // Click card → open add modal
+  div.addEventListener('click', (e) => {
+    if (e.target.closest('.add-btn')) return;
+    openAddModal(p);
+  });
+  // Add button
+  div.querySelector('.add-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openAddModal(p);
+  });
+  return div;
+}
+
+// ─── ADD MODAL ───
+let modalPriceWatcher = null;
+function openAddModal(p) {
+  const existing = cart.find(i => i.product.artikul === p.artikul);
+  const imgKey = p.artikul.toLowerCase();
+  const imgSrc = imageMap[imgKey];
+  const wh = catFilters.warehouse;
+  const stock = p[wh] || 0;
+
+  openModal('🛒 ' + (p.ad || 'Məhsul'), `
+    <div class="qty-modal-wrap">
+      <div class="qm-product">
+        <div class="qm-img-wrap">
+          ${imgSrc ? `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:contain" alt="">` : `<span style="font-size:22px;opacity:.3">📦</span>`}
         </div>
-      `).join('');
-      document.querySelectorAll('.order-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const found = ordersList.find(o => o.id === chip.dataset.id);
-          if(found) loadOrderToEditor(found);
-        });
-      });
-    }
-    
-    function clearEditor() {
-      activeOrderId = null;
-      currentOrderItems = [];
-      custNameInp.value = '';
-      custPhoneInp.value = '';
-      orderDateInp.value = new Date().toISOString().slice(0,10);
-      generalNote.value = '';
-      renderOrderItemsTable();
-      deleteBtn.style.opacity = '0.5';
-      deleteBtn.disabled = true;
-    }
-    
-    function loadOrderToEditor(order) {
-      activeOrderId = order.id;
-      custNameInp.value = order.customerName || '';
-      custPhoneInp.value = order.customerPhone || '';
-      orderDateInp.value = order.date || new Date().toISOString().slice(0,10);
-      generalNote.value = order.note || '';
-      currentOrderItems = (order.items || []).map(i => ({ ...i }));
-      renderOrderItemsTable();
-      deleteBtn.style.opacity = '1';
-      deleteBtn.disabled = false;
-      renderOrdersList();
-    }
-    
-    function renderOrderItemsTable() {
-      if (!currentOrderItems.length) { orderTbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Məhsul əlavə edilməyib</td></tr>'; dynamicTotalSpan.innerText = 'Cəmi: 0.00 ₼'; return; }
-      let total = 0;
-      orderTbody.innerHTML = currentOrderItems.map((item, idx) => {
-        const subtotal = item.price * item.quantity;
-        total += subtotal;
-        return `
-          <tr>
-            <td><strong>${escapeHtml(item.productName)}</strong><br><span style="font-size:10px;">${escapeHtml(item.artikul)}</span></td>
-            <td><div class="qty-control"><input type="number" class="qty-input" data-idx="${idx}" value="${item.quantity}" min="1" step="1"></div></td>
-            <td><input type="text" class="item-note" data-idx="${idx}" value="${escapeHtml(item.note || '')}" placeholder="qeyd"></td>
-            <td>${item.price.toFixed(2)} ₼</td>
-            <td>${subtotal.toFixed(2)} ₼</td>
-            <td><button class="remove-item-btn" data-idx="${idx}">🗑</button></td>
-          </tr>
-        `;
-      }).join('');
-      dynamicTotalSpan.innerText = `Cəmi: ${total.toFixed(2)} ₼`;
-      // attach events
-      document.querySelectorAll('.qty-input').forEach(inp => {
-        inp.addEventListener('change', (e) => {
-          let idx = parseInt(inp.dataset.idx);
-          currentOrderItems[idx].quantity = Math.max(1, parseInt(inp.value) || 1);
-          renderOrderItemsTable();
-        });
-      });
-      document.querySelectorAll('.item-note').forEach(inp => {
-        inp.addEventListener('change', (e) => {
-          let idx = parseInt(inp.dataset.idx);
-          currentOrderItems[idx].note = inp.value;
-          renderOrderItemsTable();
-        });
-      });
-      document.querySelectorAll('.remove-item-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          let idx = parseInt(btn.dataset.idx);
-          currentOrderItems.splice(idx,1);
-          renderOrderItemsTable();
-        });
-      });
-    }
-    
-    async function saveCurrentOrder() {
-      const name = custNameInp.value.trim();
-      if (!name) { toast('Müştəri adı daxil edin'); return; }
-      const totalPrice = currentOrderItems.reduce((s,i)=>s+(i.price*i.quantity),0);
-      const order = {
-        id: activeOrderId || Date.now().toString(),
-        customerName: name,
-        customerPhone: custPhoneInp.value,
-        date: orderDateInp.value || new Date().toISOString().slice(0,10),
-        note: generalNote.value,
-        items: currentOrderItems,
-        total: totalPrice,
-        createdAt: new Date().toISOString()
-      };
-      await persistOrder(order);
-      toast('Sifariş qeydə alındı');
-      if (!activeOrderId) clearEditor();
-      activeOrderId = order.id;
-      await loadAllOrders();
-      renderOrdersList();
-    }
-    
-    // add product to current order
-    function addProductToOrder(product, price) {
-      const existIdx = currentOrderItems.findIndex(i => i.artikul === product.artikul);
-      if (existIdx !== -1) {
-        currentOrderItems[existIdx].quantity += 1;
-        renderOrderItemsTable();
-        toast(`${product.ad} miqdar artırıldı`);
-      } else {
-        currentOrderItems.push({
-          artikul: product.artikul,
-          productName: product.ad,
-          quantity: 1,
-          price: price,
-          note: ''
-        });
-        renderOrderItemsTable();
-        toast(`${product.ad} sifarişə əlavə edildi`);
-      }
-    }
-    
-    // product grid filtering & render
-    function getFilteredProductList() {
-      let filtered = productsMaster.filter(p => {
-        if (prodFilter.searchName && !p.ad.toLowerCase().includes(prodFilter.searchName.toLowerCase())) return false;
-        if (prodFilter.searchCode && !p.barkod.toLowerCase().includes(prodFilter.searchCode.toLowerCase()) && !p.artikul.toLowerCase().includes(prodFilter.searchCode.toLowerCase())) return false;
-        if (prodFilter.location === 'asagi' && !p.saxlamaYeri?.toLowerCase().includes('aşağı')) return false;
-        if (prodFilter.location === 'yuxari' && !p.saxlamaYeri?.toLowerCase().includes('yuxarı')) return false;
-        if (prodFilter.onlyImg && !imagesMap[p.artikul.toLowerCase()]) return false;
-        return true;
-      });
-      const wh = prodFilter.warehouse;
-      const pt = prodFilter.priceType;
-      if (prodFilter.sortBy === 'name') filtered.sort((a,b)=> a.ad.localeCompare(b.ad));
-      else if (prodFilter.sortBy === 'price') filtered.sort((a,b)=> (a[pt]||0)-(b[pt]||0));
-      else filtered.sort((a,b)=> (a[wh]||0)-(b[wh]||0));
-      return filtered;
-    }
-    
-    function renderProductGrid() {
-      const grid = document.getElementById('productsGridArea');
-      const filtered = getFilteredProductList();
-      if (!filtered.length) { grid.innerHTML = '<div style="padding:40px; text-align:center">⚡ Məhsul tapılmadı</div>'; return; }
-      const wh = prodFilter.warehouse;
-      const pt = prodFilter.priceType;
-      grid.innerHTML = filtered.map(p => {
-        const imgUrl = imagesMap[p.artikul.toLowerCase()];
-        const price = p[pt] || 0;
-        const stock = p[wh] || 0;
-        return `
-          <div class="product-tile" data-artikul="${p.artikul}">
-            <div>${imgUrl ? `<img class="tile-img" src="${imgUrl}" loading="lazy">` : `<div style="height:100px; background:#f8fafc; display:flex; align-items:center; justify-content:center; border-radius:18px;">📦</div>`}</div>
-            <div class="tile-name">${escapeHtml(p.ad)}</div>
-            <div class="tile-price">${price.toFixed(2)} ₼</div>
-            <div class="tile-stock">Stok: ${stock}</div>
-            <button class="add-quick" data-artikul="${p.artikul}">➕ Sifarişə əlavə et</button>
+        <div>
+          <div class="qm-name">${esc(p.ad)}</div>
+          <div class="qm-meta">${esc(p.artikul)} · Stok: ${stock} əd.</div>
+        </div>
+      </div>
+      <div class="qm-fields">
+        <div>
+          <label class="qm-label">Miqdar</label>
+          <div class="qm-qty-row">
+            <button class="qm-big-btn minus" id="qm-minus">－</button>
+            <input class="qm-input" id="qm-qty" type="number" min="0.01" step="0.01" value="${existing ? existing.qty : 1}">
+            <button class="qm-big-btn" id="qm-plus">＋</button>
           </div>
-        `;
-      }).join('');
-      document.querySelectorAll('.add-quick').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const artikul = btn.dataset.artikul;
-          const product = productsMaster.find(p => p.artikul === artikul);
-          if(product) { const price = product[prodFilter.priceType] || 0; addProductToOrder(product, price); }
-        });
-      });
-      document.querySelectorAll('.product-tile').forEach(tile => {
-        tile.addEventListener('click', (e) => {
-          if(e.target.classList.contains('add-quick')) return;
-          const artikul = tile.dataset.artikul;
-          const product = productsMaster.find(p => p.artikul === artikul);
-          if(product) openProductModal(product);
-        });
-      });
+        </div>
+        <div>
+          <label class="qm-label">Ölçü vahidi</label>
+          <input class="qm-unit-input" id="qm-unit" type="text" placeholder="əd., kq, litr, m..." value="${existing ? (existing.unit||'əd.') : 'əd.'}">
+        </div>
+        <div>
+          <label class="qm-label">Qiymət növü</label>
+          <select class="qm-price-select" id="qm-price-type">
+            <option value="perakendeQiymeti"${(existing?existing.priceType:catFilters.priceType)==='perakendeQiymeti'?' selected':''}>Pərakəndə — ${numFmt(p.perakendeQiymeti)}</option>
+            <option value="topdanQiymeti"${(existing?existing.priceType:catFilters.priceType)==='topdanQiymeti'?' selected':''}>Topdan — ${numFmt(p.topdanQiymeti)}</option>
+            <option value="alishQiymeti"${(existing?existing.priceType:catFilters.priceType)==='alishQiymeti'?' selected':''}>Alış — ${numFmt(p.alishQiymeti)}</option>
+            <option value="custom">✏️ Xüsusi qiymət</option>
+          </select>
+        </div>
+        <div id="qm-custom-wrap" style="display:none">
+          <label class="qm-label">Xüsusi qiymət (₼)</label>
+          <input class="qm-unit-input" id="qm-custom-price" type="number" min="0" step="0.01" placeholder="0.00" value="${existing&&existing.customPrice||''}">
+        </div>
+        <div>
+          <label class="qm-label">Qeyd</label>
+          <textarea class="qm-note" id="qm-note" placeholder="Bu məhsul üçün qeyd...">${existing ? esc(existing.note||'') : ''}</textarea>
+        </div>
+        <div class="qm-preview">
+          <span class="qm-preview-label">Cəmi dəyər:</span>
+          <span class="qm-preview-total" id="qm-total">0,00 ₼</span>
+        </div>
+      </div>
+      <button class="qm-add-btn" id="qm-confirm">${existing ? '✅ Yenilə' : '🛒 Səbətə əlavə et'}</button>
+    </div>
+  `);
+
+  function calcPreview() {
+    const qty = parseFloat(document.getElementById('qm-qty').value) || 0;
+    const pt = document.getElementById('qm-price-type').value;
+    let price;
+    if (pt === 'custom') {
+      price = parseFloat(document.getElementById('qm-custom-price')?.value) || 0;
+    } else {
+      price = p[pt] || 0;
     }
-    
-    // məhsul detal modalı
-    function openProductModal(product) {
-      const wh = prodFilter.warehouse;
-      const modalDiv = document.getElementById('modalProductContent');
-      const imgUrl = imagesMap[product.artikul.toLowerCase()];
-      modalDiv.innerHTML = `
-        <div style="text-align:center; margin-bottom:12px;">${imgUrl ? `<img src="${imgUrl}" style="max-width:100%; max-height:180px; border-radius:20px;">` : '<div style="padding:20px; background:#f1f5f9; border-radius:20px;">🖼 Şəkil yoxdur</div>'}</div>
-        <h3>${escapeHtml(product.ad)}</h3>
-        <p><strong>Barkod:</strong> ${escapeHtml(product.barkod)}</p>
-        <p><strong>Artikul:</strong> ${escapeHtml(product.artikul)}</p>
-        <p><strong>Anbar stoku (Q/R/E):</strong> ${product.qarayev} / ${product.razin} / ${product.esas}</p>
-        <p><strong>Pərakəndə:</strong> ${(product.perakendeQiymeti||0).toFixed(2)} ₼ &nbsp; Topdan: ${(product.topdanQiymeti||0).toFixed(2)} ₼ &nbsp; Alış: ${(product.alishQiymeti||0).toFixed(2)} ₼</p>
-        <p><strong>Tədarükçü:</strong> ${escapeHtml(product.tedarikci)}</p>
-        <button id="modalQuickAddBtn" style="margin-top: 14px; width:100%; background:#0f172a; padding:12px; border-radius:40px; color:white; font-weight:bold; border:none;">➕ Bu məhsulu sifarişə əlavə et</button>
-      `;
-      document.getElementById('detailModalMask').classList.add('open');
-      document.getElementById('detailModalSheet').classList.add('open');
-      document.getElementById('modalQuickAddBtn')?.addEventListener('click', () => {
-        const price = product[prodFilter.priceType] || 0;
-        addProductToOrder(product, price);
-        closeProductModal();
-      });
-      document.body.style.overflow = 'hidden';
+    const total = qty * price;
+    document.getElementById('qm-total').textContent = numFmt(total);
+  }
+  document.getElementById('qm-minus').addEventListener('click', () => {
+    const inp = document.getElementById('qm-qty');
+    const v = Math.max(0, (parseFloat(inp.value)||1) - 1);
+    inp.value = v; calcPreview();
+  });
+  document.getElementById('qm-plus').addEventListener('click', () => {
+    const inp = document.getElementById('qm-qty');
+    inp.value = (parseFloat(inp.value)||0) + 1; calcPreview();
+  });
+  document.getElementById('qm-qty').addEventListener('input', calcPreview);
+  document.getElementById('qm-price-type').addEventListener('change', (e) => {
+    const wrap = document.getElementById('qm-custom-wrap');
+    wrap.style.display = e.target.value === 'custom' ? 'block' : 'none';
+    calcPreview();
+  });
+  document.getElementById('qm-custom-price')?.addEventListener('input', calcPreview);
+  calcPreview();
+
+  document.getElementById('qm-confirm').addEventListener('click', () => {
+    const qty = parseFloat(document.getElementById('qm-qty').value);
+    if (!qty || qty <= 0) { showToast('⚠️ Miqdar 0-dan böyük olmalıdır'); return; }
+    const pt = document.getElementById('qm-price-type').value;
+    const unit = document.getElementById('qm-unit').value.trim() || 'əd.';
+    const note = document.getElementById('qm-note').value.trim();
+    let customPrice = null;
+    if (pt === 'custom') {
+      customPrice = parseFloat(document.getElementById('qm-custom-price').value) || 0;
     }
-    function closeProductModal() {
-      document.getElementById('detailModalMask').classList.remove('open');
-      document.getElementById('detailModalSheet').classList.remove('open');
-      document.body.style.overflow = '';
+    addToCart(p, qty, pt, unit, note, customPrice);
+    closeModal();
+  });
+}
+
+// ─── CART OPERATIONS ───
+function addToCart(product, qty, priceType, unit, note, customPrice) {
+  const idx = cart.findIndex(i => i.product.artikul === product.artikul);
+  if (idx !== -1) {
+    cart[idx].qty = qty;
+    cart[idx].priceType = priceType;
+    cart[idx].unit = unit;
+    cart[idx].note = note;
+    cart[idx].customPrice = customPrice;
+    showToast('✅ Səbət yeniləndi');
+  } else {
+    cart.push({ product, qty, priceType, unit: unit||'əd.', note: note||'', customPrice });
+    showToast('✅ Səbətə əlavə edildi');
+  }
+  saveCartLS();
+  updateCartBadge();
+  renderCatalog();
+  renderCart();
+  updateHeaderSub();
+}
+function removeFromCart(artikul) {
+  cart = cart.filter(i => i.product.artikul !== artikul);
+  saveCartLS();
+  updateCartBadge();
+  renderCatalog();
+  renderCart();
+  updateHeaderSub();
+}
+function updateCartBadge() {
+  const el = document.getElementById('cart-badge');
+  el.textContent = cart.length > 0 ? cart.length : '';
+}
+
+// ─── CART TOTALS ───
+function getCartTotals() {
+  let subtotal = 0;
+  cart.forEach(item => {
+    let price = item.priceType === 'custom' ? (item.customPrice||0) : (item.product[item.priceType]||0);
+    subtotal += price * item.qty;
+  });
+  const discVal = parseFloat(document.getElementById('discount-val').value) || 0;
+  const discType = document.getElementById('discount-type').value;
+  let discAmt = 0;
+  if (discType === 'pct') discAmt = subtotal * (discVal / 100);
+  else discAmt = discVal;
+  discAmt = Math.max(0, Math.min(discAmt, subtotal));
+  const total = subtotal - discAmt;
+  return { subtotal, discAmt, total };
+}
+
+function updateCartSummary() {
+  const items = cart.length;
+  const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+  const { subtotal, discAmt, total } = getCartTotals();
+  document.getElementById('sum-items').textContent = items;
+  document.getElementById('sum-qty').textContent = parseFloat(totalQty.toFixed(4));
+  document.getElementById('sum-subtotal').textContent = numFmt(subtotal);
+  document.getElementById('sum-total').textContent = numFmt(total);
+  const discRow = document.getElementById('discount-row');
+  const discVal = parseFloat(document.getElementById('discount-val').value) || 0;
+  if (discVal > 0) {
+    discRow.style.display = 'flex';
+    document.getElementById('sum-discount').textContent = '-' + numFmt(discAmt);
+  } else {
+    discRow.style.display = 'none';
+  }
+}
+
+// ─── RENDER CART ───
+function renderCart() {
+  const empty = document.getElementById('cart-empty');
+  const content = document.getElementById('cart-content');
+  const itemsCnt = document.getElementById('ct-count-label');
+  const itemsContainer = document.getElementById('cart-items');
+
+  if (!cart.length) {
+    empty.classList.add('show');
+    content.style.display = 'none';
+    return;
+  }
+  empty.classList.remove('show');
+  content.style.display = 'block';
+  itemsCnt.textContent = `${cart.length} maddə`;
+
+  let sortedCart = [...cart];
+  if (cartSortMode === 'name') sortedCart.sort((a,b) => a.product.ad.localeCompare(b.product.ad));
+  else if (cartSortMode === 'price') sortedCart.sort((a,b) => {
+    const pa = a.priceType==='custom'?(a.customPrice||0):(a.product[a.priceType]||0);
+    const pb = b.priceType==='custom'?(b.customPrice||0):(b.product[b.priceType]||0);
+    return (pb*b.qty) - (pa*a.qty);
+  });
+
+  const frag = document.createDocumentFragment();
+  sortedCart.forEach(item => frag.appendChild(createCartItem(item)));
+  itemsContainer.innerHTML = '';
+  itemsContainer.appendChild(frag);
+  updateCartSummary();
+}
+
+function createCartItem(item) {
+  const p = item.product;
+  const imgKey = p.artikul.toLowerCase();
+  const imgSrc = imageMap[imgKey];
+  let price = item.priceType === 'custom' ? (item.customPrice||0) : (p[item.priceType]||0);
+  const lineTotal = price * item.qty;
+
+  const div = document.createElement('div');
+  div.className = 'cart-item';
+  div.dataset.artikul = p.artikul;
+  div.innerHTML = `
+    <div class="ci-top">
+      <div class="ci-img-wrap">
+        ${imgSrc ? `<img class="ci-img" src="${imgSrc}" alt="${esc(p.ad)}" style="cursor:pointer">` : `<span class="ci-img-ph">📦</span>`}
+      </div>
+      <div class="ci-info">
+        <div class="ci-name">${esc(p.ad)||'(adsız)'}</div>
+        <div class="ci-meta">${esc(p.artikul)||'—'} · ${esc(p.barkod)||'—'}</div>
+        <div class="ci-price" id="ci-price-${esc(p.artikul)}">${numFmt(price)} / ${esc(item.unit||'əd.')}</div>
+      </div>
+      <button class="ci-remove" data-artikul="${esc(p.artikul)}" title="Sil">✕</button>
+    </div>
+    <div class="ci-controls">
+      <div class="qty-control">
+        <button class="qty-btn" data-act="minus" data-artikul="${esc(p.artikul)}">−</button>
+        <input class="qty-input" id="qty-${esc(p.artikul)}" type="number" min="0.01" step="0.01" value="${item.qty}" data-artikul="${esc(p.artikul)}">
+        <span class="qty-unit">${esc(item.unit||'əd.')}</span>
+        <button class="qty-btn" data-act="plus" data-artikul="${esc(p.artikul)}">+</button>
+      </div>
+      <select class="pt-select" data-artikul="${esc(p.artikul)}" id="pt-${esc(p.artikul)}">
+        <option value="perakendeQiymeti"${item.priceType==='perakendeQiymeti'?' selected':''}>Pərakəndə ${numFmt(p.perakendeQiymeti)}</option>
+        <option value="topdanQiymeti"${item.priceType==='topdanQiymeti'?' selected':''}>Topdan ${numFmt(p.topdanQiymeti)}</option>
+        <option value="alishQiymeti"${item.priceType==='alishQiymeti'?' selected':''}>Alış ${numFmt(p.alishQiymeti)}</option>
+        <option value="custom"${item.priceType==='custom'?' selected':''}>✏️ Xüsusi</option>
+      </select>
+      ${item.priceType==='custom' ? `<input class="qty-input" id="cp-${esc(p.artikul)}" type="number" min="0" step="0.01" placeholder="Qiymət" value="${item.customPrice||0}" data-artikul="${esc(p.artikul)}" style="width:72px">` : ''}
+      <span class="ci-line-price" id="line-${esc(p.artikul)}">${numFmt(lineTotal)}</span>
+    </div>
+    <div class="ci-note-row">
+      <textarea class="ci-note" data-artikul="${esc(p.artikul)}" placeholder="Bu məhsul üçün qeyd...">${esc(item.note||'')}</textarea>
+    </div>
+  `;
+  // Image click → fullscreen
+  const ciImg = div.querySelector('.ci-img');
+  if (ciImg) ciImg.addEventListener('click', () => openFullscreen(imgSrc));
+  // Remove
+  div.querySelector('.ci-remove').addEventListener('click', () => {
+    if (confirm(`"${p.ad}" səbətdən silinsin?`)) removeFromCart(p.artikul);
+  });
+  // Qty buttons
+  div.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const art = btn.dataset.artikul;
+      const idx = cart.findIndex(i => i.product.artikul === art);
+      if (idx === -1) return;
+      const step = btn.dataset.act === 'plus' ? 1 : -1;
+      const newQty = Math.max(0.01, parseFloat(cart[idx].qty) + step);
+      cart[idx].qty = parseFloat(newQty.toFixed(4));
+      document.getElementById('qty-' + art).value = cart[idx].qty;
+      updateLinePrice(art);
+      updateCartSummary();
+      saveCartLS();
+      updateCatalogCard(art);
+    });
+  });
+  // Qty input
+  div.querySelector('.qty-input').addEventListener('input', debounce(e => {
+    const art = e.target.dataset.artikul;
+    const idx = cart.findIndex(i => i.product.artikul === art);
+    if (idx === -1) return;
+    const v = parseFloat(e.target.value);
+    if (isNaN(v) || v <= 0) return;
+    cart[idx].qty = parseFloat(v.toFixed(4));
+    updateLinePrice(art);
+    updateCartSummary();
+    saveCartLS();
+    updateCatalogCard(art);
+  }, 350));
+  // Price type select
+  div.querySelector('.pt-select').addEventListener('change', e => {
+    const art = e.target.dataset.artikul;
+    const idx = cart.findIndex(i => i.product.artikul === art);
+    if (idx === -1) return;
+    cart[idx].priceType = e.target.value;
+    saveCartLS();
+    updateLinePrice(art);
+    updateCartSummary();
+    // re-render to show/hide custom price input
+    renderCart();
+  });
+  // Custom price input
+  const cpInp = div.querySelector(`#cp-${p.artikul}`);
+  if (cpInp) {
+    cpInp.addEventListener('input', debounce(e => {
+      const art = p.artikul;
+      const idx = cart.findIndex(i => i.product.artikul === art);
+      if (idx === -1) return;
+      cart[idx].customPrice = parseFloat(e.target.value) || 0;
+      saveCartLS();
+      updateLinePrice(art);
+      updateCartSummary();
+    }, 350));
+  }
+  // Note
+  div.querySelector('.ci-note').addEventListener('input', debounce(e => {
+    const art = e.target.dataset.artikul;
+    const idx = cart.findIndex(i => i.product.artikul === art);
+    if (idx !== -1) { cart[idx].note = e.target.value; saveCartLS(); }
+  }, 500));
+  return div;
+}
+
+function updateLinePrice(artikul) {
+  const idx = cart.findIndex(i => i.product.artikul === artikul);
+  if (idx === -1) return;
+  const item = cart[idx];
+  let price = item.priceType === 'custom' ? (item.customPrice||0) : (item.product[item.priceType]||0);
+  const lineTotal = price * item.qty;
+  const lEl = document.getElementById('line-' + artikul);
+  if (lEl) lEl.textContent = numFmt(lineTotal);
+  const pEl = document.getElementById('ci-price-' + artikul);
+  if (pEl) pEl.textContent = numFmt(price) + ' / ' + (item.unit||'əd.');
+}
+function updateCatalogCard(artikul) {
+  const card = document.querySelector(`.catalog-grid .product-card[data-artikul="${CSS.escape(artikul)}"]`);
+  if (card) {
+    const item = cart.find(i => i.product.artikul === artikul);
+    const addBtn = card.querySelector('.add-btn');
+    if (addBtn) {
+      addBtn.textContent = item ? item.qty : '+';
+      addBtn.classList.toggle('added', !!item);
     }
-    
-    // export all orders to excel
-    function exportAllOrdersToExcel() {
-      if(!ordersList.length) { toast('İxrac üçün sifariş yoxdur'); return; }
-      const data = ordersList.map(o => ({
-        'Sifariş No': o.id,
-        'Müştəri': o.customerName,
-        'Telefon': o.customerPhone,
-        'Tarix': o.date,
-        'Qeyd': o.note,
-        'Məhsullar': (o.items || []).map(i=>`${i.productName} (${i.quantity}x ${i.price}₼) ${i.note?`[${i.note}]`:''}`).join(', '),
-        'Ümumi məbləğ': o.total
-      }));
-      const ws = XLSX.utils.json_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Sifarişlər');
-      XLSX.writeFile(wb, `sifarisler_${new Date().toISOString().slice(0,19)}.xlsx`);
-      toast('Excel hazırlandı');
+  }
+}
+
+// Discount
+document.getElementById('discount-val').addEventListener('input', debounce(() => { updateCartSummary(); saveOrderInfoLS(); }, 300));
+document.getElementById('discount-type').addEventListener('change', () => { updateCartSummary(); saveOrderInfoLS(); });
+
+// ─── CART SORT ───
+document.getElementById('sort-cart-btn').addEventListener('click', () => {
+  const modes = ['added','name','price'];
+  const labels = { added:'Əlavə olunma', name:'Ad', price:'Qiymət' };
+  const nextIdx = (modes.indexOf(cartSortMode) + 1) % modes.length;
+  cartSortMode = modes[nextIdx];
+  showToast('Sıralama: ' + labels[cartSortMode]);
+  renderCart();
+});
+document.getElementById('clear-cart-btn').addEventListener('click', () => {
+  if (!cart.length) return;
+  if (confirm('Səbəti tamamilə boşaltmaq istəyirsiniz?')) {
+    cart = [];
+    saveCartLS();
+    updateCartBadge();
+    renderCatalog();
+    renderCart();
+    updateHeaderSub();
+    showToast('🗑 Səbət təmizləndi');
+  }
+});
+
+// ─── SAVE ORDER ───
+function getOrderInfo() {
+  return {
+    clientName:    document.getElementById('client-name').value.trim(),
+    clientPhone:   document.getElementById('client-phone').value.trim(),
+    clientEmail:   document.getElementById('client-email').value.trim(),
+    clientAddress: document.getElementById('client-address').value.trim(),
+    orderDate:     document.getElementById('order-date').value || todayStr(),
+    deliveryDate:  document.getElementById('delivery-date').value,
+    orderStatus:   document.getElementById('order-status').value,
+    paymentType:   document.getElementById('payment-type').value,
+    paymentStatus: document.getElementById('payment-status').value,
+    orderNote:     document.getElementById('order-note').value.trim(),
+    discountVal:   parseFloat(document.getElementById('discount-val').value) || 0,
+    discountType:  document.getElementById('discount-type').value,
+  };
+}
+
+function buildOrderObject(isDraft) {
+  const info = getOrderInfo();
+  const totals = getCartTotals();
+  const items = cart.map(i => ({
+    artikul:    i.product.artikul,
+    barkod:     i.product.barkod,
+    ad:         i.product.ad,
+    qty:        i.qty,
+    unit:       i.unit || 'əd.',
+    priceType:  i.priceType,
+    customPrice: i.customPrice || null,
+    price:      i.priceType === 'custom' ? (i.customPrice||0) : (i.product[i.priceType]||0),
+    lineTotal:  (i.priceType === 'custom' ? (i.customPrice||0) : (i.product[i.priceType]||0)) * i.qty,
+    note:       i.note || '',
+    tedarikci:  i.product.tedarikci || '',
+    saxlamaYeri: i.product.saxlamaYeri || '',
+  }));
+  return {
+    ...info,
+    id: currentOrderId || genOrderNumber(),
+    savedAt: new Date().toISOString(),
+    isDraft: !!isDraft,
+    items,
+    subtotal:   totals.subtotal,
+    discountAmt: totals.discAmt,
+    total:      totals.total,
+  };
+}
+
+function confirmOrder(isDraft) {
+  if (!cart.length) { showToast('⚠️ Səbət boşdur'); switchTab('catalog'); return; }
+  const info = getOrderInfo();
+  if (!info.clientName && !isDraft) { showToast('⚠️ Müştəri adı daxil edin'); switchTab('orderinfo'); return; }
+
+  const order = buildOrderObject(isDraft);
+  const existIdx = orders.findIndex(o => o.id === order.id);
+  if (existIdx !== -1) orders[existIdx] = order;
+  else orders.unshift(order);
+
+  saveOrdersLS();
+  updateOrdersBadge();
+  renderOrdersList();
+
+  if (!isDraft) {
+    // Clear cart and form
+    cart = [];
+    currentOrderId = null;
+    saveCartLS();
+    clearCartLS();
+    clearOrderInfoLS();
+    resetOrderInfoForm();
+    updateCartBadge();
+    renderCatalog();
+    renderCart();
+    updateHeaderSub();
+    showToast('✅ Sifariş #' + order.id + ' saxlanıldı');
+    switchTab('orders');
+  } else {
+    currentOrderId = order.id;
+    document.getElementById('order-number').value = order.id;
+    showToast('💾 Qaralama saxlanıldı: #' + order.id);
+  }
+}
+
+document.getElementById('confirm-order-btn').addEventListener('click', () => confirmOrder(false));
+document.getElementById('save-draft-btn').addEventListener('click', () => confirmOrder(true));
+
+// ─── NEW ORDER ───
+document.getElementById('new-order-btn').addEventListener('click', () => {
+  if (cart.length || currentOrderId) {
+    if (!confirm('Cari sifariş silinsin, yeni sifariş başlansın?')) return;
+  }
+  cart = [];
+  currentOrderId = null;
+  clearCartLS();
+  clearOrderInfoLS();
+  resetOrderInfoForm();
+  updateCartBadge();
+  renderCatalog();
+  renderCart();
+  updateHeaderSub();
+  showToast('🆕 Yeni sifariş başlandı');
+  switchTab('catalog');
+});
+
+function resetOrderInfoForm() {
+  document.getElementById('client-name').value = '';
+  document.getElementById('client-phone').value = '';
+  document.getElementById('client-email').value = '';
+  document.getElementById('client-address').value = '';
+  document.getElementById('order-date').value = todayStr();
+  document.getElementById('delivery-date').value = '';
+  document.getElementById('order-status').value = 'pending';
+  document.getElementById('payment-type').value = '';
+  document.getElementById('payment-status').value = 'unpaid';
+  document.getElementById('order-note').value = '';
+  document.getElementById('order-number').value = '';
+  document.getElementById('discount-val').value = '0';
+  document.getElementById('discount-type').value = 'flat';
+}
+
+// Auto save order info on change
+['client-name','client-phone','client-email','client-address','order-date','delivery-date','order-status','payment-type','payment-status','order-note'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', debounce(saveOrderInfoLS, 500));
+  if (el) el.addEventListener('change', saveOrderInfoLS);
+});
+
+// ─── ORDERS LIST ───
+function updateOrdersBadge() {
+  const pending = orders.filter(o => o.orderStatus === 'pending' && !o.isDraft).length;
+  const el = document.getElementById('orders-badge');
+  el.textContent = pending > 0 ? pending : '';
+}
+
+document.getElementById('orders-status-seg').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  document.querySelectorAll('#orders-status-seg .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ordersStatusFilter = btn.dataset.status;
+  renderOrdersList();
+});
+document.getElementById('orders-search').addEventListener('input', debounce(e => {
+  ordersSearchQ = e.target.value.toLowerCase();
+  renderOrdersList();
+}, 280));
+
+function renderOrdersList() {
+  const list = document.getElementById('orders-list');
+  const empty = document.getElementById('orders-empty');
+  const countLabel = document.getElementById('orders-count-label');
+
+  let filtered = orders.filter(o => {
+    if (ordersStatusFilter !== 'all' && o.orderStatus !== ordersStatusFilter) return false;
+    if (ordersSearchQ) {
+      const q = ordersSearchQ;
+      if (!o.id.toLowerCase().includes(q) &&
+          !o.clientName.toLowerCase().includes(q) &&
+          !(o.clientPhone||'').includes(q) &&
+          !(o.orderNote||'').toLowerCase().includes(q)) return false;
     }
-    
-    // event listeners for filters
-    function bindFilterEvents() {
-      document.getElementById('prodNameSearch').addEventListener('input', debounce(e=>{ prodFilter.searchName=e.target.value; renderProductGrid(); }, 300));
-      document.getElementById('prodCodeSearch').addEventListener('input', debounce(e=>{ prodFilter.searchCode=e.target.value; renderProductGrid(); }, 300));
-      document.querySelectorAll('#warehouseChips .chip').forEach(ch => ch.addEventListener('click', (e) => {
-        document.querySelectorAll('#warehouseChips .chip').forEach(c=>c.classList.remove('active'));
-        ch.classList.add('active'); prodFilter.warehouse = ch.dataset.wh; renderProductGrid();
-      }));
-      document.querySelectorAll('#priceTypeChips .chip').forEach(ch => ch.addEventListener('click', (e) => {
-        document.querySelectorAll('#priceTypeChips .chip').forEach(c=>c.classList.remove('active'));
-        ch.classList.add('active'); prodFilter.priceType = ch.dataset.pt; renderProductGrid();
-      }));
-      document.querySelectorAll('#locationChips .chip').forEach(ch => ch.addEventListener('click', (e) => {
-        document.querySelectorAll('#locationChips .chip').forEach(c=>c.classList.remove('active'));
-        ch.classList.add('active'); prodFilter.location = ch.dataset.loc; renderProductGrid();
-      }));
-      document.getElementById('onlyImgCheck').addEventListener('change', e=>{ prodFilter.onlyImg=e.target.checked; renderProductGrid(); });
-      document.getElementById('sortSelect').addEventListener('change', e=>{ prodFilter.sortBy=e.target.value; renderProductGrid(); });
+    return true;
+  });
+
+  countLabel.textContent = `${filtered.length} sifariş`;
+
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(o => frag.appendChild(createOrderCard(o)));
+  list.innerHTML = '';
+  list.appendChild(frag);
+}
+
+function createOrderCard(o) {
+  const div = document.createElement('div');
+  div.className = 'order-card';
+  div.innerHTML = `
+    <div class="oc-header">
+      <div>
+        <span class="oc-id">${esc(o.id)}</span>
+        ${o.isDraft ? ' <span class="status-badge s-pending">📝 Qaralama</span>' : `<span class="status-badge ${statusClass(o.orderStatus)}">${statusLabel(o.orderStatus)}</span>`}
+      </div>
+      <div class="oc-date">${fmtDate(o.orderDate)}</div>
+    </div>
+    <div class="oc-client">${esc(o.clientName)||'(Adsız müştəri)'}</div>
+    ${o.clientPhone ? `<div class="oc-note">📞 ${esc(o.clientPhone)}</div>` : ''}
+    ${o.orderNote ? `<div class="oc-note">💬 ${esc(o.orderNote.slice(0,60))}${o.orderNote.length>60?'…':''}</div>` : ''}
+    <div class="oc-footer">
+      <span class="oc-items">${o.items.length} maddə · ${o.items.reduce((s,i)=>s+i.qty,0).toFixed(2)} əd.</span>
+      <span class="oc-total">${numFmt(o.total)}</span>
+    </div>
+  `;
+  div.addEventListener('click', () => openOrderDetail(o));
+  return div;
+}
+
+// ─── ORDER DETAIL MODAL ───
+function openOrderDetail(o) {
+  const itemsHtml = o.items.map(item => {
+    const imgKey = item.artikul.toLowerCase();
+    const imgSrc = imageMap[imgKey];
+    return `
+      <div class="od-item">
+        <div class="od-item-img">
+          ${imgSrc ? `<img src="${imgSrc}" alt="">` : `<span style="font-size:18px;opacity:.3">📦</span>`}
+        </div>
+        <div class="od-item-info">
+          <div class="od-item-name">${esc(item.ad)||'(adsız)'}</div>
+          <div class="od-item-meta">${esc(item.artikul)} · ${item.qty} ${esc(item.unit||'əd.')} × ${numFmt(item.price)} = <strong>${numFmt(item.lineTotal)}</strong></div>
+          <div class="od-item-meta">${priceLabel(item.priceType)}${item.tedarikci?' · '+esc(item.tedarikci):''}</div>
+          ${item.note ? `<div class="od-item-note">💬 ${esc(item.note)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  openModal('📋 ' + o.id, `
+    <div class="od-header-info">
+      <div class="od-row"><span class="od-key">Müştəri</span><span class="od-val">${esc(o.clientName)||'—'}</span></div>
+      ${o.clientPhone?`<div class="od-row"><span class="od-key">Telefon</span><span class="od-val">${esc(o.clientPhone)}</span></div>`:''}
+      ${o.clientEmail?`<div class="od-row"><span class="od-key">E-poçt</span><span class="od-val">${esc(o.clientEmail)}</span></div>`:''}
+      ${o.clientAddress?`<div class="od-row"><span class="od-key">Ünvan</span><span class="od-val">${esc(o.clientAddress)}</span></div>`:''}
+      <div class="od-row"><span class="od-key">Tarix</span><span class="od-val">${fmtDate(o.orderDate)}${o.deliveryDate?' → '+fmtDate(o.deliveryDate):''}</span></div>
+      <div class="od-row"><span class="od-key">Status</span><span class="od-val"><span class="status-badge ${statusClass(o.orderStatus)}">${statusLabel(o.orderStatus)}</span></span></div>
+      ${o.paymentType?`<div class="od-row"><span class="od-key">Ödəniş</span><span class="od-val">${esc(o.paymentType)} · ${esc(o.paymentStatus||'—')}</span></div>`:''}
+      <div class="od-row"><span class="od-key">Ara cəm</span><span class="od-val">${numFmt(o.subtotal)}</span></div>
+      ${o.discountAmt>0?`<div class="od-row"><span class="od-key">Endirim</span><span class="od-val" style="color:var(--red)">-${numFmt(o.discountAmt)}</span></div>`:''}
+      <div class="od-row"><span class="od-key" style="font-weight:700;color:var(--text)">CƏMİ</span><span class="od-val" style="font-size:16px;font-weight:800;color:var(--green)">${numFmt(o.total)}</span></div>
+      ${o.orderNote?`<div class="od-row"><span class="od-key">Qeyd</span><span class="od-val">${esc(o.orderNote)}</span></div>`:''}
+    </div>
+    <div class="od-items-title">📦 ${o.items.length} maddə</div>
+    ${itemsHtml}
+    <div class="od-actions">
+      <button class="od-action-btn restore" id="od-edit">✏️ Redaktə</button>
+      <button class="od-action-btn print" id="od-print">🖨️ Çap et</button>
+      <button class="od-action-btn xlsx" id="od-xlsx">📊 Excel</button>
+      <button class="od-action-btn whatsapp" id="od-whatsapp">💬 WhatsApp</button>
+      <button class="od-action-btn delete" id="od-delete">🗑 Sil</button>
+    </div>
+  `);
+
+  document.getElementById('od-edit').addEventListener('click', () => {
+    if (cart.length && !confirm('Cari səbət silinəcək. Davam edilsin?')) return;
+    loadOrderToCart(o);
+    closeModal();
+  });
+  document.getElementById('od-print').addEventListener('click', () => { closeModal(); setTimeout(() => printOrder(o), 300); });
+  document.getElementById('od-xlsx').addEventListener('click', () => exportOrderToXlsx(o));
+  document.getElementById('od-whatsapp').addEventListener('click', () => { closeModal(); shareViaWhatsApp(o); });
+  document.getElementById('od-delete').addEventListener('click', () => {
+    if (confirm('Bu sifariş silinsin?')) {
+      orders = orders.filter(x => x.id !== o.id);
+      saveOrdersLS();
+      updateOrdersBadge();
+      renderOrdersList();
+      updateHeaderSub();
+      closeModal();
+      showToast('🗑 Sifariş silindi');
     }
-    function debounce(fn,delay){let t; return (...args)=>{clearTimeout(t); t=setTimeout(()=>fn(...args),delay);};}
-    
-    async function init() {
-      await loadWarehouseData();
-      await openOrdersDB();
-      await loadAllOrders();
-      clearEditor();
-      bindFilterEvents();
-      renderProductGrid();
-      // Buttons
-      saveBtn.onclick = saveCurrentOrder;
-      newBtn.onclick = () => { clearEditor(); activeOrderId = null; renderOrdersList(); toast('Yeni sifariş paneli'); };
-      deleteBtn.onclick = async () => { if(activeOrderId && confirm('Sifarişi silmək istəyirsiniz?')) { await deleteOrderDB(activeOrderId); clearEditor(); } };
-      exportExcelBtn.onclick = exportAllOrdersToExcel;
-      document.getElementById('detailModalMask').onclick = closeProductModal;
-      orderDateInp.value = new Date().toISOString().slice(0,10);
-      deleteBtn.disabled = true;
-      deleteBtn.style.opacity = '0.5';
+  });
+}
+
+function loadOrderToCart(o) {
+  cart = o.items.map(item => {
+    const p = allProducts.find(x => x.artikul === item.artikul) || {
+      artikul: item.artikul, barkod: item.barkod, ad: item.ad,
+      perakendeQiymeti: item.price, topdanQiymeti: item.price, alishQiymeti: item.price,
+      tedarikci: item.tedarikci||'', saxlamaYeri: item.saxlamaYeri||'',
+      qarayev: 0, razin: 0, esas: 0,
+    };
+    return { product: p, qty: item.qty, priceType: item.priceType, unit: item.unit||'əd.', note: item.note||'', customPrice: item.customPrice||null };
+  });
+  currentOrderId = o.id;
+  saveCartLS();
+
+  // Restore order info
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val||''; };
+  setVal('client-name', o.clientName);
+  setVal('client-phone', o.clientPhone);
+  setVal('client-email', o.clientEmail);
+  setVal('client-address', o.clientAddress);
+  setVal('order-date', o.orderDate);
+  setVal('delivery-date', o.deliveryDate);
+  setVal('order-status', o.orderStatus);
+  setVal('payment-type', o.paymentType);
+  setVal('payment-status', o.paymentStatus);
+  setVal('order-note', o.orderNote);
+  setVal('order-number', o.id);
+  setVal('discount-val', o.discountVal || 0);
+  document.getElementById('discount-type').value = o.discountType || 'flat';
+
+  updateCartBadge();
+  renderCatalog();
+  renderCart();
+  updateHeaderSub();
+  showToast('✏️ Sifariş redaktə üçün yükləndi');
+  switchTab('cart');
+}
+
+// ─── PRINT ───
+function getOrderPrintHTML(o) {
+  const itemsHtml = o.items.map((item, idx) => `
+    <tr>
+      <td>${idx+1}</td>
+      <td>${esc(item.artikul)||'—'}</td>
+      <td>${esc(item.ad)||'—'}</td>
+      <td>${item.qty} ${esc(item.unit||'əd.')}</td>
+      <td>${numFmt(item.price)}</td>
+      <td>${numFmt(item.lineTotal)}</td>
+      <td>${esc(item.note||'')}</td>
+    </tr>
+  `).join('');
+  return `
+    <html><head><meta charset="UTF-8"><title>Sifariş ${esc(o.id)}</title>
+    <style>
+      body{font-family:-apple-system,Arial,sans-serif;font-size:13px;color:#1a202c;padding:24px}
+      h2{font-size:20px;margin-bottom:4px;color:#1a2c3e}
+      .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;margin:14px 0 20px;background:#f0f4f8;padding:12px;border-radius:8px}
+      .info-row{font-size:12px}.info-key{color:#718096;font-weight:600}.info-val{color:#1a202c}
+      table{width:100%;border-collapse:collapse;margin-bottom:16px}
+      th{background:#1a2c3e;color:#fff;padding:8px;text-align:left;font-size:12px}
+      td{padding:7px 8px;border-bottom:1px solid #e2e8f0;font-size:12px}
+      tr:nth-child(even) td{background:#f7fafc}
+      .totals{margin-left:auto;width:260px}
+      .totals tr td:first-child{color:#718096;font-weight:600}
+      .totals tr td:last-child{text-align:right;font-weight:700}
+      .grand-total td{font-size:15px;color:#276749;border-top:2px solid #1a2c3e;padding-top:8px}
+      .footer{margin-top:30px;border-top:1px solid #e2e8f0;padding-top:12px;font-size:12px;color:#718096;display:flex;justify-content:space-between}
+    </style></head><body>
+    <h2>🧾 Sifariş: ${esc(o.id)}</h2>
+    <div style="font-size:12px;color:#718096;margin-bottom:10px">Tarix: ${fmtDate(o.orderDate)} · Çap: ${new Date().toLocaleString('az')}</div>
+    <div class="info-grid">
+      <div class="info-row"><span class="info-key">Müştəri: </span><span class="info-val">${esc(o.clientName)||'—'}</span></div>
+      <div class="info-row"><span class="info-key">Telefon: </span><span class="info-val">${esc(o.clientPhone)||'—'}</span></div>
+      <div class="info-row"><span class="info-key">E-poçt: </span><span class="info-val">${esc(o.clientEmail)||'—'}</span></div>
+      <div class="info-row"><span class="info-key">Ünvan: </span><span class="info-val">${esc(o.clientAddress)||'—'}</span></div>
+      <div class="info-row"><span class="info-key">Çatdırılma tarixi: </span><span class="info-val">${fmtDate(o.deliveryDate)||'—'}</span></div>
+      <div class="info-row"><span class="info-key">Ödəniş: </span><span class="info-val">${esc(o.paymentType||'—')}</span></div>
+      <div class="info-row"><span class="info-key">Status: </span><span class="info-val">${statusLabel(o.orderStatus)}</span></div>
+      <div class="info-row"><span class="info-key">Ödəniş statusu: </span><span class="info-val">${esc(o.paymentStatus||'—')}</span></div>
+    </div>
+    ${o.orderNote ? `<div style="background:#fff3cd;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px"><b>Qeyd:</b> ${esc(o.orderNote)}</div>` : ''}
+    <table>
+      <thead><tr><th>#</th><th>Artikul</th><th>Məhsul adı</th><th>Miqdar</th><th>Qiymət</th><th>Məbləğ</th><th>Qeyd</th></tr></thead>
+      <tbody>${itemsHtml}</tbody>
+    </table>
+    <table class="totals">
+      <tr><td>Ara cəm:</td><td>${numFmt(o.subtotal)}</td></tr>
+      ${o.discountAmt>0?`<tr><td>Endirim:</td><td>-${numFmt(o.discountAmt)}</td></tr>`:''}
+      <tr class="grand-total"><td>CƏMİ:</td><td>${numFmt(o.total)}</td></tr>
+    </table>
+    <div class="footer">
+      <span>Anbar İdarəetmə Sistemi</span>
+      <span>Sifariş #${esc(o.id)}</span>
+    </div>
+    </body></html>
+  `;
+}
+
+function printOrder(o) {
+  const printHtml = getOrderPrintHTML(o);
+  const win = window.open('', '_blank');
+  win.document.write(printHtml);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 400);
+}
+
+// ─── WHATSAPP PAYLAŞMA ───
+async function generatePDFBlob(o) {
+  const printHtml = getOrderPrintHTML(o);
+
+  // Canvas ilə PDF yaratmaq üçün html2canvas + jsPDF istifadə etmədən,
+  // sadə bir print-style HTML yaradıb onu blob-a çevirək.
+  // WhatsApp üçün daha uyğun olaraq mətn formatında göndərək.
+
+  // Əvvəlcə mətn formatında hazırlayaq (WhatsApp üçün)
+  let textContent = `🧾 *Sifariş: ${o.id}*\n`;
+  textContent += `📅 Tarix: ${fmtDate(o.orderDate)}\n`;
+  textContent += `👤 Müştəri: ${o.clientName || '—'}\n`;
+  if (o.clientPhone) textContent += `📞 Telefon: ${o.clientPhone}\n`;
+  if (o.clientAddress) textContent += `📍 Ünvan: ${o.clientAddress}\n`;
+  if (o.deliveryDate) textContent += `🚚 Çatdırılma: ${fmtDate(o.deliveryDate)}\n`;
+  textContent += `📊 Status: ${statusLabel(o.orderStatus)}\n`;
+  if (o.paymentType) textContent += `💳 Ödəniş: ${o.paymentType}\n`;
+  textContent += `\n━━━━━━━━━━━━━━━━\n`;
+  textContent += `📦 *Məhsullar:*\n\n`;
+
+  o.items.forEach((item, idx) => {
+    textContent += `${idx+1}. *${item.ad || '(adsız)'}*\n`;
+    textContent += `   ${item.qty} ${item.unit || 'əd.'} × ${numFmt(item.price)} = ${numFmt(item.lineTotal)}\n`;
+    if (item.note) textContent += `   📝 ${item.note}\n`;
+  });
+
+  textContent += `\n━━━━━━━━━━━━━━━━\n`;
+  textContent += `Ara cəm: ${numFmt(o.subtotal)}\n`;
+  if (o.discountAmt > 0) textContent += `Endirim: -${numFmt(o.discountAmt)}\n`;
+  textContent += `*CƏMİ: ${numFmt(o.total)}*\n`;
+  if (o.orderNote) textContent += `\n📝 Qeyd: ${o.orderNote}\n`;
+
+  // HTML-dən PDF-ə çevirmək üçün blob yaradaq (mətn əsaslı)
+  const blob = new Blob([textContent], { type: 'text/plain' });
+  return blob;
+}
+
+async function shareViaWhatsApp(o) {
+  try {
+    showToast('📤 WhatsApp üçün hazırlanır...');
+
+    let textContent = `🧾 *Sifariş: ${o.id}*\n`;
+    textContent += `📅 Tarix: ${fmtDate(o.orderDate)}\n`;
+    textContent += `👤 Müştəri: ${o.clientName || '—'}\n`;
+    if (o.clientPhone) textContent += `📞 Telefon: ${o.clientPhone}\n`;
+    if (o.clientAddress) textContent += `📍 Ünvan: ${o.clientAddress}\n`;
+    if (o.deliveryDate) textContent += `🚚 Çatdırılma: ${fmtDate(o.deliveryDate)}\n`;
+    textContent += `📊 Status: ${statusLabel(o.orderStatus)}\n`;
+    if (o.paymentType) textContent += `💳 Ödəniş: ${o.paymentType}\n`;
+    textContent += `\n━━━━━━━━━━━━━━━━\n`;
+    textContent += `📦 *Məhsullar:*\n\n`;
+
+    o.items.forEach((item, idx) => {
+      textContent += `${idx+1}. *${item.ad || '(adsız)'}*\n`;
+      textContent += `   ${item.qty} ${item.unit || 'əd.'} × ${numFmt(item.price)} = ${numFmt(item.lineTotal)}\n`;
+      if (item.note) textContent += `   📝 ${item.note}\n`;
+    });
+
+    textContent += `\n━━━━━━━━━━━━━━━━\n`;
+    textContent += `Ara cəm: ${numFmt(o.subtotal)}\n`;
+    if (o.discountAmt > 0) textContent += `Endirim: -${numFmt(o.discountAmt)}\n`;
+    textContent += `*CƏMİ: ${numFmt(o.total)}*\n`;
+    if (o.orderNote) textContent += `\n📝 Qeyd: ${o.orderNote}\n`;
+
+    // WhatsApp URL scheme ilə paylaş
+    const encodedText = encodeURIComponent(textContent);
+    const waUrl = `https://wa.me/?text=${encodedText}`;
+
+    // Yeni pəncərədə WhatsApp-ı aç
+    const win = window.open(waUrl, '_blank');
+
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      // Popup bloklandısa, istifadəçiyə məlumat ver
+      showToast('⚠️ Popup bloklandı. İcazə verib təkrar yoxlayın.', 4000);
+      return;
     }
-    init();
-  })();
+
+    showToast('✅ WhatsApp açıldı');
+  } catch (err) {
+    console.error('WhatsApp paylaşma xətası:', err);
+    showToast('⚠️ WhatsApp paylaşıla bilmədi', 3000);
+  }
+}
+
+// ─── EXPORT ORDER TO XLSX ───
+function exportOrderToXlsx(o) {
+  if (window._xlsxFailed || typeof XLSX === 'undefined') { showToast('⚠️ XLSX kitabxanası yüklənməyib'); return; }
+  const headers = ['#','Artikul','Məhsul adı','Miqdar','Vahid','Qiymət növü','Qiymət (₼)','Məbləğ (₼)','Qeyd','Saxlama yeri','Tədarükçü'];
+  const rows = o.items.map((item, idx) => [
+    idx+1, item.artikul, item.ad, item.qty, item.unit||'əd.', priceLabel(item.priceType), item.price, item.lineTotal, item.note||'', item.saxlamaYeri||'', item.tedarikci||''
+  ]);
+  const infoRows = [
+    [], ['Sifariş nömrəsi:', o.id], ['Müştəri:', o.clientName||'—'], ['Telefon:', o.clientPhone||'—'],
+    ['E-poçt:', o.clientEmail||'—'], ['Ünvan:', o.clientAddress||'—'],
+    ['Sifariş tarixi:', fmtDate(o.orderDate)], ['Çatdırılma tarixi:', fmtDate(o.deliveryDate)],
+    ['Status:', statusLabel(o.orderStatus)], ['Ödəniş:', o.paymentType||'—'], ['Ödəniş statusu:', o.paymentStatus||'—'],
+    ['Qeyd:', o.orderNote||''], [], ['Ara cəm:', '', '', '', '', '', '', numFmt(o.subtotal)],
+    o.discountAmt>0 ? ['Endirim:', '', '', '', '', '', '', '-'+numFmt(o.discountAmt)] : null,
+    ['CƏMİ:', '', '', '', '', '', '', numFmt(o.total)],
+  ].filter(Boolean);
+
+  const wb = XLSX.utils.book_new();
+  const ws1 = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  ws1['!cols'] = [{wch:4},{wch:14},{wch:32},{wch:8},{wch:8},{wch:12},{wch:12},{wch:12},{wch:24},{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Sifariş malları');
+
+  const ws2 = XLSX.utils.aoa_to_sheet(infoRows);
+  ws2['!cols'] = [{wch:20},{wch:32}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Sifariş məlumatı');
+
+  XLSX.writeFile(wb, `sifaris_${o.id}_${o.orderDate||todayStr()}.xlsx`);
+  showToast('✅ Excel ixrac edildi');
+}
+
+// ─── EXPORT ALL ORDERS ───
+document.getElementById('export-orders-btn').addEventListener('click', () => {
+  if (!orders.length) { showToast('⚠️ Sifariş yoxdur'); return; }
+  if (window._xlsxFailed || typeof XLSX === 'undefined') { showToast('⚠️ XLSX kitabxanası yüklənməyib'); return; }
+  const headers = ['Sifariş №','Müştəri','Telefon','Tarix','Çatdırılma','Status','Ödəniş','Ödəniş statusu','Maddə sayı','Ara cəm','Endirim','Cəmi','Qeyd'];
+  const rows = orders.map(o => [
+    o.id, o.clientName||'', o.clientPhone||'', o.orderDate||'', o.deliveryDate||'',
+    statusLabel(o.orderStatus), o.paymentType||'', o.paymentStatus||'',
+    o.items.length, o.subtotal, o.discountAmt||0, o.total, o.orderNote||''
+  ]);
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  ws['!cols'] = [{wch:14},{wch:22},{wch:16},{wch:12},{wch:12},{wch:16},{wch:14},{wch:16},{wch:10},{wch:12},{wch:10},{wch:12},{wch:30}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sifarişlər');
+  XLSX.writeFile(wb, `butun_sifarisler_${todayStr()}.xlsx`);
+  showToast('✅ Bütün sifarişlər ixrac edildi');
+});
+
+// ─── CLEAR ALL ORDERS ───
+document.getElementById('clear-all-orders-btn').addEventListener('click', () => {
+  if (!orders.length) return;
+  if (confirm(`${orders.length} sifariş silinsin? Bu əməliyyat geri alına bilməz!`)) {
+    orders = [];
+    saveOrdersLS();
+    updateOrdersBadge();
+    renderOrdersList();
+    updateHeaderSub();
+    showToast('🗑 Bütün sifarişlər silindi');
+  }
+});
+
+// ─── MODAL ───
+const modalOverlay = document.getElementById('modal-overlay');
+const modalEl = document.getElementById('modal');
+
+function openModal(title, bodyHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  modalOverlay.classList.add('open');
+  requestAnimationFrame(() => modalEl.classList.add('open'));
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  modalEl.classList.remove('open');
+  setTimeout(() => { modalOverlay.classList.remove('open'); document.body.style.overflow = ''; }, 320);
+}
+document.getElementById('modal-close').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', closeModal);
+modalEl.addEventListener('click', e => e.stopPropagation());
+
+// ─── FULLSCREEN IMAGE ───
+const fsOverlay = document.getElementById('fs-overlay');
+const fsImg = document.getElementById('fs-img');
+function openFullscreen(src) { fsImg.src = src; fsOverlay.classList.add('open'); }
+document.getElementById('fs-close').addEventListener('click', () => { fsOverlay.classList.remove('open'); fsImg.src = ''; });
+fsOverlay.addEventListener('click', e => { if (e.target === fsOverlay) { fsOverlay.classList.remove('open'); fsImg.src = ''; }});
+
+// ─── INFINITE SCROLL ───
+const catalogSentinel = document.getElementById('catalog-sentinel');
+const catObserver = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && displayLimit < filteredProds.length) {
+    displayLimit += PAGE_SIZE;
+    renderCatalog();
+  }
+}, { rootMargin: '200px' });
+catObserver.observe(catalogSentinel);
+
+// ─── INIT ───
+async function init() {
+  document.getElementById('order-date').value = todayStr();
+  loadOrdersLS();
+  updateOrdersBadge();
+
+  try {
+    await openDB();
+    const products = await dbGetAll('products');
+    const images = await dbGetAll('images');
+    for (const img of images) {
+      try { imageMap[img.artikul] = URL.createObjectURL(img.blob); } catch(e) {}
+    }
+    allProducts = products;
+    loadCartLS();
+    loadOrderInfoLS();
+    applyFilters();
+    renderCart();
+    renderOrdersList();
+    updateCartBadge();
+    updateHeaderSub();
+    document.getElementById('header-sub').textContent = allProducts.length
+      ? `${allProducts.length} məhsul · ${Object.keys(imageMap).length} şəkil`
+      : 'Anbardan məhsullar yükləyin';
+  } catch(err) {
+    document.getElementById('header-sub').textContent = 'Məhsullar yüklənmədi';
+    console.warn('DB error:', err);
+  }
+}
+init();
 </script>
 </body>
 </html>
