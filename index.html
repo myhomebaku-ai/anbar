@@ -1382,7 +1382,7 @@ document.getElementById('excel-input').addEventListener('change', async (e) => {
     setProgress(40, `${rows.length} sətir tapıldı`);
     await new Promise(r => setTimeout(r, 30));
 
-    const products = [];
+    const productMap = new Map(); // eyni ad üzrə birləşdirilmiş məhsullar
     const CHUNK = 200;
     for (let start = 0; start < rows.length; start += CHUNK) {
       const end = Math.min(start + CHUNK, rows.length);
@@ -1391,24 +1391,41 @@ document.getElementById('excel-input').addEventListener('change', async (e) => {
         const ad = String(row[1] || '').trim();
         const artikul = String(row[5] || '').trim();
         if (!ad && !artikul) continue;
-        products.push({
-          ad,
-          barkod: String(row[4] || '').trim(),
-          artikul,
-          tedarikci: String(row[6] || '').trim(),
-          saxlamaYeri: String(row[8] || '').trim(),
-          qarayev: parseFloat(row[10]) || 0,
-          razin: parseFloat(row[11]) || 0,
-          esas: parseFloat(row[12]) || 0,
-          alishQiymeti: parseFloat(row[14]) || 0,
-          topdanQiymeti: parseFloat(row[15]) || 0,
-          perakendeQiymeti: parseFloat(row[16]) || 0,
-        });
+        const barkod = String(row[4] || '').trim();
+        const groupKey = ad ? ad.toLowerCase() : ('__artikul__' + artikul);
+        const qarayev = parseFloat(row[10]) || 0;
+        const razin = parseFloat(row[11]) || 0;
+        const esas = parseFloat(row[12]) || 0;
+
+        let existing = productMap.get(groupKey);
+        if (!existing) {
+          existing = {
+            ad,
+            barkod,
+            barkodlar: barkod ? [barkod] : [],
+            artikul,
+            tedarikci: String(row[6] || '').trim(),
+            saxlamaYeri: String(row[8] || '').trim(),
+            qarayev,
+            razin,
+            esas,
+            alishQiymeti: parseFloat(row[14]) || 0,
+            topdanQiymeti: parseFloat(row[15]) || 0,
+            perakendeQiymeti: parseFloat(row[16]) || 0,
+          };
+          productMap.set(groupKey, existing);
+        } else {
+          if (barkod && !existing.barkodlar.includes(barkod)) existing.barkodlar.push(barkod);
+          existing.qarayev += qarayev;
+          existing.razin += razin;
+          existing.esas += esas;
+        }
       }
       const pct = 40 + ((end / rows.length) * 40);
-      setProgress(pct, `${products.length} məhsul işləndi`);
+      setProgress(pct, `${productMap.size} məhsul işləndi`);
       await new Promise(r => setTimeout(r, 0));
     }
+    const products = Array.from(productMap.values());
 
     setProgress(82, 'IndexedDB-yə yazılır...');
     await new Promise(r => setTimeout(r, 30));
@@ -1999,7 +2016,9 @@ function applyFilters() {
       if (!nameWords.every(w => n.includes(w))) return false;
     }
     if (codeQ) {
-      if (!p.barkod.toLowerCase().includes(codeQ) && !p.artikul.toLowerCase().includes(codeQ)) return false;
+      const barkodList = (p.barkodlar && p.barkodlar.length) ? p.barkodlar : [p.barkod];
+      const barkodMatch = barkodList.some(b => String(b || '').toLowerCase().includes(codeQ));
+      if (!barkodMatch && !p.artikul.toLowerCase().includes(codeQ)) return false;
     }
     if (locMode === 'asagi') {
       if (!p.saxlamaYeri.toLowerCase().includes('aşağı') && !p.saxlamaYeri.toLowerCase().includes('asagi')) return false;
@@ -2275,7 +2294,7 @@ function openModal(p) {
         ? `<img class="modal-img" src="${imgSrc}" alt="${esc(p.ad)}" id="modal-main-img">`
         : `<div class="modal-no-img">📦</div>`}
     </div>
-    <div class="detail-row"><div class="detail-key">Barkod</div><div class="detail-val">${esc(p.barkod) || '—'}</div></div>
+    <div class="detail-row"><div class="detail-key">Barkod</div><div class="detail-val">${esc((p.barkodlar && p.barkodlar.length) ? p.barkodlar.join(', ') : p.barkod) || '—'}</div></div>
     <div class="detail-row"><div class="detail-key">Artikul</div><div class="detail-val">${esc(p.artikul) || '—'}</div></div>
     <div class="detail-row">
       <div class="detail-key">Anbar stoku</div>
